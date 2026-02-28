@@ -1,0 +1,3162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA | Born to Crush Land</title>
+    
+    <!-- Preconnect to external domains for faster loading -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://storage.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+    <!-- Cache Control Meta Tags -->
+    <meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
+    
+    <!-- Compression Hint -->
+    <meta http-equiv="Accept-Encoding" content="gzip, deflate, br">
+    
+    <!-- GSAP - Defer loading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    
+    <!-- Locomotive Scroll CSS - Preload for critical rendering -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css" as="style">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+
+    <!-- Inline Critical CSS for faster initial render -->
+    <style>
+        /* Critical CSS - Above the fold */
+        :root {
+            --bg-body: #050505;
+            --bg-card: #1E1E1E;
+            --text-main: #FFFFFF;
+            --text-muted: #888888;
+            --accent-green: #00FF9D;
+            --accent-blue: #00C2FF;
+            --accent-purple: #8A2BE2;
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; outline: none; }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 20px 0;
+            width: 100%;
+            z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(20px);
+            transition: padding 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 12px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo-box img { 
+            width: 36px;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled .logo-box img {
+            width: 32px;
+        }
+
+        .logo-text { 
+            font-size: 12px; 
+            letter-spacing: 2px; 
+            font-weight: 700; 
+            color: #fff; 
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled .logo-text {
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        /* Sticky Navigation Bar */
+        .sticky-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(42, 42, 42, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+            padding: 12px 20px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .sticky-nav.show {
+            display: block;
+        }
+
+        .sticky-nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .sticky-nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sticky-nav-logo img {
+            width: 28px;
+            height: 28px;
+        }
+
+        .sticky-nav-logo span {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .sticky-nav-cta {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sticky-nav-cta:hover {
+            background: linear-gradient(135deg, #357ABD 0%, #2868A8 100%);
+            transform: scale(1.05);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .icon-btn {
+            background: none;
+            padding: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .icon-btn:hover { transform: scale(1.1); }
+
+        .icon-btn img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Search Overlay */
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
+            backdrop-filter: blur(20px);
+        }
+
+        .search-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .search-overlay-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 25px;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(-20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+        }
+
+        .search-overlay.active .search-overlay-header {
+            transform: translateY(0);
+        }
+
+        .search-overlay-logo {
+            width: 32px;
+            height: 32px;
+        }
+
+        .search-overlay-input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .search-overlay-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            opacity: 0.6;
+        }
+
+        .search-overlay-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 400;
+        }
+
+        .search-overlay-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-overlay-cancel {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 0;
+            transition: opacity 0.2s;
+        }
+
+        .search-overlay-cancel:hover {
+            opacity: 0.7;
+        }
+
+        .search-overlay-content {
+            flex: 1;
+            padding: 30px 25px;
+            overflow-y: auto;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s, opacity 0.4s 0.2s;
+        }
+
+        .search-overlay.active .search-overlay-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .search-suggestions {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-suggestions h3 {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .search-suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .search-suggestion-item:hover {
+            padding-left: 10px;
+        }
+
+        .search-suggestion-item span {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 10001;
+            position: relative;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        /* Hamburger Menu Overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
+            overflow-y: auto;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-content {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 70px 20px 40px;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s, opacity 0.5s 0.1s;
+        }
+
+        .menu-overlay.active .menu-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .menu-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10001;
+        }
+
+        .menu-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: rotate(90deg);
+        }
+
+        .menu-close::before,
+        .menu-close::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 2px;
+            background: white;
+        }
+
+        .menu-close::before {
+            transform: rotate(45deg);
+        }
+
+        .menu-close::after {
+            transform: rotate(-45deg);
+        }
+
+        .menu-grid {
+            display: grid;
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .menu-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-header img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .menu-header span {
+            color: #C8A882;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-item {
+            padding: 14px 16px;
+            color: #B0B0B0;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-item::after {
+            content: '›';
+            font-size: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-category {
+            background: rgba(200, 168, 130, 0.05);
+            border: 1px solid rgba(200, 168, 130, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .menu-category-title {
+            color: #C8A882;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-subcategory {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-subcategory span {
+            color: #D4B896;
+            font-size: 14px;
+        }
+
+        .payment-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #B0B0B0;
+            font-size: 15px;
+        }
+
+        .payment-header img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .payment-methods {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 30px;
+        }
+
+        .payment-badge {
+            background: #FFFFFF;
+            border-radius: 6px;
+            border: 1px solid #616063;
+            padding: 8px 12px;
+        }
+
+        .payment-badge span {
+            color: #798491;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .payment-badge img {
+            width: 32px;
+            height: auto;
+        }
+
+        .rewards-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rewards-item img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .rewards-item span {
+            color: #B0B0B0;
+            font-size: 15px;
+        }
+
+        .menu-footer-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .menu-footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .menu-footer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-footer-item img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .menu-footer-item span {
+            color: #909092;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .language-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .language-item img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .language-options {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .language-options.show {
+            display: flex;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .language-option.active {
+            background: rgba(200, 168, 130, 0.1);
+            border-color: rgba(200, 168, 130, 0.4);
+        }
+
+        .language-option img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .language-option span {
+            color: #B0B0B0;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .language-option.active span {
+            color: #C8A882;
+            font-weight: 600;
+        }
+
+        .check-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C8A882;
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .language-option.active .check-icon {
+            opacity: 1;
+        }
+
+        /* Explore Shoes Section with Video Background */
+        .menu-section.explore-shoes {
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .explore-shoes-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .menu-section.explore-shoes::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .menu-section.explore-shoes::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.1) 0%, transparent 5%, transparent 95%, rgba(255, 255, 255, 0.1) 100%),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, transparent 5%, transparent 95%, rgba(255, 255, 255, 0.1) 100%);
+            border-radius: 16px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .menu-section.explore-shoes .menu-header {
+            position: relative;
+            z-index: 4;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-section.explore-shoes .menu-header span {
+            color: #FFFFFF;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .menu-section.explore-shoes .menu-items-list {
+            position: relative;
+            z-index: 4;
+        }
+
+        .menu-section.explore-shoes .menu-item {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .menu-auth-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-signin,
+        .btn-signup {
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-signin {
+            background: linear-gradient(135deg, #C8A882 0%, #A89070 100%);
+            color: #1a1a1a;
+            border: none;
+        }
+
+        .btn-signin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(200, 168, 130, 0.4);
+        }
+
+        .btn-signup {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #B0B0B0;
+        }
+
+        .btn-signup:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+        }
+
+        @media(min-width: 768px) {
+            .menu-content {
+                max-width: 600px;
+                padding: 100px 40px 60px;
+            }
+
+            .menu-grid {
+                max-width: 600px;
+            }
+
+            .menu-close {
+                top: 30px;
+                right: 30px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .menu-footer-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: white;
+        }
+
+        /* --- LANGUAGE SELECTION BAR --- */
+        .language-bar {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            font-size: 13px;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 100%;
+            z-index: 98;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        header.scrolled + .language-bar {
+            top: 66px;
+        }
+
+        .language-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .language-bar-left span {
+            color: #C8A882;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .language-bar-center {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .language-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-cancel-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #888;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .language-cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        .language-option-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #B0B0B0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .language-option-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #FFFFFF;
+        }
+
+        .language-option-btn.active {
+            background: linear-gradient(135deg, #C8A882 0%, #A89070 100%);
+            border-color: #C8A882;
+            color: #1a1a1a;
+        }
+
+        .language-continue-btn {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: #fff;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .language-continue-btn:hover {
+            background: linear-gradient(135deg, #357ABD 0%, #2868A8 100%);
+            transform: scale(1.05);
+        }
+
+        @media(max-width: 768px) {
+            .language-bar {
+                top: 78px;
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            header.scrolled + .language-bar {
+                top: 62px;
+            }
+
+            .language-bar-left {
+                justify-content: center;
+            }
+
+            .language-bar-center {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .language-bar-right {
+                justify-content: center;
+            }
+
+            .language-option-btn,
+            .language-continue-btn,
+            .language-cancel-btn {
+                flex: 1;
+                min-width: 70px;
+                text-align: center;
+            }
+        }
+
+        /* --- HERO SECTION (Minimalist) --- */
+        .hero {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+            background-image: url('https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/h3wx70ma_expires_30_days.png');
+            background-size: cover;
+            background-position: center;
+            padding: 170px 20px 60px;
+            overflow: hidden;
+        }
+
+        /* Background Video */
+        .hero-bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 100%);
+            z-index: 1;
+        }
+
+        /* Text Scrim for Better Readability */
+        .hero-text-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: calc(100% + 80px);
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.7) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 35px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Refined Headline */
+        .hero h1 {
+            font-size: clamp(40px, 8vw, 70px);
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            letter-spacing: -2px;
+            color: #FFFFFF;
+            text-align: center;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Refined Paragraph */
+        .hero p {
+            color: #F0F0F0;
+            font-size: clamp(16px, 2vw, 20px);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 500;
+            text-align: center;
+            padding: 0 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Button Container */
+        .hero-btn-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(20px, 3vw, 30px);
+            margin-bottom: 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-customization {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFFFFF;
+            border: none;
+            border-radius: 30px;
+            padding: 14px 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-customization:hover {
+            background: #F0F0F0;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-customization span {
+            color: #000000;
+            font-size: clamp(14px, 2vw, 17px);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-watch {
+            display: flex;
+            align-items: center;
+            background: rgba(49, 49, 49, 0.9);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 32px;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-watch:hover {
+            background: rgba(65, 65, 65, 0.95);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-watch span {
+            color: #FFFFFF;
+            font-size: clamp(14px, 2vw, 17px);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-watch img {
+            width: 18px;
+            height: 20px;
+            object-fit: fill;
+        }
+
+        /* Play/Pause Button */
+        .play-pause-container {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            z-index: 3;
+        }
+
+        .play-pause-btn {
+            width: clamp(40px, 5vw, 50px);
+            height: clamp(40px, 5vw, 50px);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .play-pause-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .play-pause-btn img {
+            width: clamp(20px, 3vw, 28px);
+            height: clamp(20px, 3vw, 28px);
+            object-fit: fill;
+        }
+
+        @media(min-width: 769px) {
+            .hero {
+                padding: 150px 40px 60px;
+            }
+
+            .hero-bg-video {
+                opacity: 0.6;
+            }
+
+            .hero h1 {
+                font-size: clamp(50px, 6vw, 65px);
+                margin-bottom: 22px;
+                letter-spacing: -1.5px;
+            }
+
+            .hero p {
+                font-size: clamp(17px, 1.8vw, 19px);
+                max-width: 680px;
+                line-height: 1.7;
+            }
+
+            .hero-text-wrapper {
+                margin-bottom: 40px;
+            }
+
+            .hero-btn-container {
+                gap: 25px;
+            }
+
+            .play-pause-container {
+                bottom: 60px;
+                right: 60px;
+            }
+        }
+
+        @media(max-width: 768px) {
+            .hero {
+                padding: 170px 15px 80px;
+                justify-content: center;
+            }
+
+            .hero-bg-video {
+                opacity: 0.7;
+            }
+
+            .hero-content {
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+                margin-bottom: 18px;
+            }
+
+            .hero p {
+                font-size: 15px;
+                line-height: 1.6;
+                max-width: 90%;
+            }
+
+            .hero-text-wrapper {
+                margin-bottom: 30px;
+            }
+            
+            .hero-btn-container {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .btn-customization,
+            .btn-watch {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .play-pause-container {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .promo-bar {
+                top: 68px;
+            }
+
+            header.scrolled + .promo-bar {
+                top: 52px;
+            }
+        }
+
+        /* --- FEATURED SECTION --- */
+        .featured { 
+            padding: 0;
+            position: relative;
+            z-index: 2;
+            background-color: #000000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            transition: background-color 1s ease;
+        }
+
+        .featured.yellow-active {
+            background-color: #FFD700;
+        }
+
+        .featured-bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FFD700 0%, #FFC700 100%);
+            transform: translateY(100%);
+            z-index: 5;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .featured-content-wrapper {
+            position: relative;
+            z-index: 20;
+            padding: clamp(60px, 10vh, 100px) 0;
+        }
+        
+        .section-header {
+            color: #FFFFFF;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 700;
+            margin-bottom: clamp(40px, 6vh, 60px);
+            padding-left: clamp(30px, 6vw, 100px);
+            letter-spacing: -1px;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+            gap: clamp(20px, 3vw, 40px);
+            padding: 0 clamp(30px, 6vw, 100px);
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .feat-card {
+            border-radius: clamp(12px, 2vw, 20px);
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 4 / 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.4s ease;
+            padding: clamp(30px, 5vw, 50px);
+        }
+
+        .feat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+        }
+
+        .feat-card-left {
+            background: linear-gradient(180deg, #556B7F 0%, #7A8FA3 40%, #D5D5D5 100%);
+        }
+
+        .shoe-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 20px);
+            flex: 1;
+            flex-wrap: wrap;
+            width: 100%;
+            padding: clamp(20px, 4vh, 40px) 0;
+        }
+
+        .shoe-display img {
+            width: clamp(80px, 15vw, 140px);
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.4));
+            transition: transform 0.5s ease;
+        }
+
+        .feat-card-left:hover .shoe-display img:nth-child(1) {
+            transform: translateY(-15px) rotate(-15deg);
+        }
+
+        .feat-card-left:hover .shoe-display img:nth-child(2) {
+            transform: translateY(-22px) scale(1.08);
+        }
+
+        .feat-card-left:hover .shoe-display img:nth-child(3) {
+            transform: translateY(-15px) rotate(15deg);
+        }
+
+        .feat-card-right {
+            background: linear-gradient(180deg, #34495E 0%, #1C2833 100%);
+        }
+
+        .flying-shoes-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 20px);
+            flex: 1;
+            flex-wrap: wrap;
+            width: 100%;
+            padding: clamp(20px, 4vh, 40px) 0;
+        }
+
+        .flying-shoes-container img {
+            width: clamp(80px, 15vw, 140px);
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.5));
+            transition: transform 0.5s ease;
+        }
+
+        .feat-card-right:hover .flying-shoes-container img:nth-child(1) {
+            transform: translateY(-15px) rotate(-10deg);
+        }
+
+        .feat-card-right:hover .flying-shoes-container img:nth-child(2) {
+            transform: translateY(-25px) scale(1.08);
+        }
+
+        .feat-card-right:hover .flying-shoes-container img:nth-child(3) {
+            transform: translateY(-18px) rotate(10deg);
+        }
+
+        .feat-card-content {
+            position: relative;
+            z-index: 2;
+            padding: 0;
+            width: 100%;
+        }
+
+        .feat-card-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: clamp(10px, 1.2vw, 13px);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: clamp(8px, 1.5vh, 12px);
+        }
+
+        .feat-card-title {
+            color: #FFFFFF;
+            font-size: clamp(18px, 2.5vw, 28px);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: clamp(15px, 2.5vh, 25px);
+        }
+
+        .feat-link { 
+            color: #000000;
+            background: #FFFFFF;
+            font-weight: 600; 
+            font-size: clamp(13px, 1.5vw, 15px);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            padding: clamp(10px, 1.5vh, 14px) clamp(24px, 4vw, 32px);
+            border-radius: 50px;
+            text-transform: capitalize;
+        }
+
+        .feat-link:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @media(max-width: 968px) {
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feat-card {
+                aspect-ratio: 3 / 4;
+            }
+        }
+
+        @media(max-width: 600px) {
+            .shoe-display,
+            .flying-shoes-container {
+                gap: 8px;
+            }
+
+            .shoe-display img,
+            .flying-shoes-container img {
+                width: clamp(60px, 22vw, 100px);
+            }
+
+            .feat-card {
+                padding: 25px;
+            }
+        }
+
+        /* --- NEW ARRIVALS --- */
+        .new-arrivals {
+            padding: 80px 0;
+            background-color: #0b0b0b;
+        }
+
+        /* --- FOLD EFFECT SECTION (Section 4) --- */
+        .fold-effect-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000000;
+            overflow: hidden;
+        }
+
+        .wrapper-3d {
+            position: relative;
+            perspective: 20vw;
+            transform-style: preserve-3d;
+        }
+
+        .fold {
+            overflow: hidden;
+            width: 100vw;
+            height: 80vh;
+        }
+
+        .fold-top {
+            position: absolute;
+            transform-origin: bottom center;
+            left: 0;
+            right: 0;
+            bottom: 100%;
+            transform: rotateX(-120deg);
+        }
+
+        .fold-center {
+            width: 100vw;
+        }
+
+        .fold-bottom {
+            position: absolute;
+            transform-origin: top center;
+            right: 0;
+            left: 0;
+            top: 100%;
+            transform: rotateX(120deg);
+        }
+
+        .fold-align {
+            width: 100%;
+            height: 100%;
+        }
+
+        .fold-bottom .fold-align {
+            transform: translateY(-100%);
+        }
+
+        .fold-top .fold-align {
+            transform: translateY(100%);
+        }
+
+        .marquee {
+            border-bottom: 1px solid #333;
+            color: #ccc;
+            font-size: clamp(3rem, 8vw, 9rem);
+            font-weight: 700;
+            height: calc(170px + 4rem);
+            overflow: hidden;
+            position: relative;
+            width: 100vw;
+        }
+
+        .marquee .track {
+            height: 100%;
+            overflow: hidden;
+            padding: 2rem 0;
+            position: absolute;
+            white-space: nowrap;
+            will-change: transform;
+        }
+
+        .marquee .track .text {
+            animation: marquee 50s linear infinite;
+            align-items: center;
+            display: inline-flex;
+            will-change: transform;
+        }
+
+        .marquee .-focus {
+            color: #C8A882;
+            font-weight: 900;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @media(max-width: 768px) {
+            .fold {
+                height: 60vh;
+            }
+
+            .marquee {
+                font-size: clamp(2rem, 6vw, 4rem);
+                height: calc(100px + 2rem);
+            }
+
+            .marquee .track {
+                padding: 1rem 0;
+            }
+        }
+
+        /* --- NEW ARRIVALS --- */
+        .new-arrivals {
+            padding: 80px 0;
+            background-color: #050505;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
+        }
+
+        .na-header {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 50px;
+            text-align: center;
+            color: #EAEAEA;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Product Card */
+        .product-card {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto;
+            background-color: #0a0a0a;
+            border-radius: 30px;
+            padding: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 15px rgba(207, 170, 109, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.95), 0 0 25px rgba(207, 170, 109, 0.2);
+        }
+
+        /* Gold Gradient Border */
+        .product-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            padding: 1.5px;
+            background: linear-gradient(135deg, #444, #cfaa6d, #444);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-inner {
+            background: #0e0e0e;
+            border-radius: 26px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            background-image: radial-gradient(#151515 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .prod-title {
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .shoe-box {
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin: 5px 0;
+        }
+
+        .prod-img {
+            width: 100%;
+            max-width: 280px;
+            object-fit: contain;
+            transform: rotate(0deg) scale(1.1);
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.7));
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .prod-img {
+            transform: scale(1.15) translateY(-5px);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .rating {
+            background: rgba(255,255,255,0.05);
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #cfaa6d;
+            font-size: 0.9rem;
+        }
+
+        .rating-count {
+            color: #666;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .prod-price {
+            color: #cfaa6d;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .btn-container {
+            margin-top: 10px;
+            background: linear-gradient(90deg, #cfaa6d, #b08d55);
+            border-radius: 50px;
+            padding: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 55px;
+            box-shadow: 0 5px 15px rgba(191, 149, 90, 0.2);
+            position: relative;
+        }
+
+        .icon-area {
+            width: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bag-icon {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #4a3b22;
+            stroke-width: 2;
+        }
+
+        .add-btn {
+            flex-grow: 1;
+            background: linear-gradient(180deg, #1f1f1f, #000);
+            color: #cfaa6d;
+            border: none;
+            border-radius: 40px;
+            height: 100%;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1);
+        }
+
+        .add-btn:hover {
+            color: #fff;
+            background: linear-gradient(180deg, #333, #111);
+        }
+
+        .browse-btn-container { 
+            display: flex; 
+            justify-content: center;
+            margin-top: 60px;
+        }
+        
+        .browse-btn {
+            background: linear-gradient(90deg, #cfaa6d, #b08d55);
+            color: #000;
+            padding: 16px 50px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            letter-spacing: 1.5px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(207, 170, 109, 0.3);
+        }
+
+        .browse-btn:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(207, 170, 109, 0.4);
+        }
+
+        @media(max-width: 768px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .product-card {
+                max-width: 100%;
+            }
+        }
+
+        /* --- FOOTER VISUALS --- */
+        .footer-visuals {
+            position: relative;
+            background: #000;
+            padding: 120px 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-white {
+            background: #fff;
+            color: #000;
+            padding: 16px 36px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 10;
+            text-transform: uppercase;
+            transition: transform 0.3s;
+            letter-spacing: 1px;
+        }
+        .btn-white:hover { transform: scale(1.05); }
+
+        .asset-flower {
+            position: absolute;
+            bottom: 40px;
+            left: 5%;
+            width: 250px;
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .asset-gold {
+            position: absolute;
+            top: 40px;
+            right: 8%;
+            width: 160px;
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .credits {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #444;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- LEGAL FOOTER --- */
+        .legal-footer {
+            background: #050505;
+            border-top: 1px solid #1a1a1a;
+            padding: 30px 0;
+        }
+
+        .legal-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-links a { 
+            font-size: 11px; 
+            color: #666; 
+            margin-right: 20px; 
+            font-weight: 600; 
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover { color: #fff; }
+
+        .socials { display: flex; gap: 20px; }
+        .socials img { width: 16px; opacity: 0.4; transition: opacity 0.3s; cursor: pointer; }
+        .socials img:hover { opacity: 1; }
+        
+        .copyright { color: #444; font-size: 11px; width: 100%; text-align: center; margin-top: 15px; }
+
+        @media(min-width: 768px) {
+            .copyright { width: auto; margin-top: 0; }
+        }
+
+        @media(max-width: 600px) {
+            .hero h1 { font-size: 38px; }
+            .hero p { max-width: 300px; }
+            .asset-flower { width: 120px; left: -20px; bottom: 80px; }
+            .asset-gold { width: 100px; right: -10px; top: 20px; }
+            .nav-actions { gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Spinner -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <div data-scroll-container>
+
+        <!-- Header -->
+        <header data-scroll-section id="mainHeader">
+            <div class="container header-inner">
+                <div class="logo-box">
+                    <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/7ud91xaz_expires_30_days.png" alt="Astra Logo">
+                    <span class="logo-text">ASTRA</span>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="icon-btn" id="searchBtn">
+                        <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/ztgckmow_expires_30_days.png" alt="Search">
+                    </button>
+                    
+                    <button class="icon-btn" onclick="alert('Bag')">
+                        <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/23zs5afb_expires_30_days.png" alt="Bag">
+                    </button>
+
+                    <div class="hamburger" id="hamburgerBtn">
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sticky Navigation Bar -->
+        <div class="sticky-nav" id="stickyNav">
+            <div class="sticky-nav-inner">
+                <div class="sticky-nav-logo">
+                    <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/7ud91xaz_expires_30_days.png" alt="Astra">
+                    <span>ASTRA</span>
+                </div>
+                <button class="sticky-nav-cta" onclick="alert('Opening Astra Store...')">
+                    Open Astra Store
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Overlay -->
+        <div class="search-overlay" id="searchOverlay">
+            <div class="search-overlay-header">
+                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/7ud91xaz_expires_30_days.png" alt="Astra Logo" class="search-overlay-logo">
+                <div class="search-overlay-input-wrapper">
+                    <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/ztgckmow_expires_30_days.png" alt="Search" class="search-overlay-icon">
+                    <input type="text" class="search-overlay-input" placeholder="Search" id="searchInput" autofocus>
+                </div>
+                <button class="search-overlay-cancel" id="searchCancel">Cancel</button>
+            </div>
+            <div class="search-overlay-content">
+                <div class="search-suggestions">
+                    <h3>Popular Searches</h3>
+                    <div class="search-suggestion-item">
+                        <span>Running Shoes</span>
+                    </div>
+                    <div class="search-suggestion-item">
+                        <span>Basketball Sneakers</span>
+                    </div>
+                    <div class="search-suggestion-item">
+                        <span>Casual Footwear</span>
+                    </div>
+                    <div class="search-suggestion-item">
+                        <span>Sports Collection</span>
+                    </div>
+                    <div class="search-suggestion-item">
+                        <span>Limited Edition</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hamburger Menu Overlay -->
+        <div class="menu-overlay" id="menuOverlay">
+            <button class="menu-close" id="menuClose"></button>
+            
+            <div class="menu-content">
+                <div class="menu-grid">
+                    <!-- Explore Shoes Section -->
+                    <div class="menu-section explore-shoes">
+                        <video class="explore-shoes-video" autoplay loop muted playsinline>
+                            <source src="Shoes.mp4" type="video/mp4">
+                        </video>
+                        <div class="menu-header">
+                            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/erxixafw_expires_30_days.png" alt="Explore">
+                            <span>Explore Shoes</span>
+                        </div>
+                        <div class="menu-items-list">
+                            <div class="menu-item">New Arrivals</div>
+                            <div class="menu-item">Best Sellers</div>
+                            <div class="menu-item">Favorites</div>
+                            <div class="menu-item">My Cart</div>
+                            <div class="menu-item">Track Order</div>
+                        </div>
+                    </div>
+
+                    <!-- Shoes Category -->
+                    <div class="menu-category">
+                        <div class="menu-category-title">Shoes</div>
+                        <div class="menu-subcategory">
+                            <span>Sneakers</span>
+                        </div>
+                    </div>
+
+                    <!-- Payments Section -->
+                    <div class="menu-section">
+                        <div class="payment-section">
+                            <div class="payment-header">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/hy8e055h_expires_30_days.png" alt="Payment">
+                                <span>Payments</span>
+                            </div>
+                            <div class="payment-methods">
+                                <div class="payment-badge">
+                                    <span>VISA</span>
+                                </div>
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/q6ka4twc_expires_30_days.png" alt="Mastercard">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rewards -->
+                    <div class="rewards-item">
+                        <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/1hajv0kj_expires_30_days.png" alt="Rewards">
+                        <span>Rewards (coming soon)</span>
+                    </div>
+
+                    <!-- Footer Section -->
+                    <div class="menu-footer-section">
+                        <div class="menu-footer-grid">
+                            <div class="menu-footer-item">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/sixud5lz_expires_30_days.png" alt="Settings">
+                                <span>Settings</span>
+                            </div>
+                            <div class="menu-footer-item" id="menuLanguageToggle">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/wpundjau_expires_30_days.png" alt="Language">
+                                <span>Language</span>
+                            </div>
+                            <div class="menu-footer-item" onclick="alert('Opening Astra Store...')">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/7ud91xaz_expires_30_days.png" alt="Store">
+                                <span>Astra Store</span>
+                            </div>
+                        </div>
+
+                        <!-- Language Options (Hidden by default) -->
+                        <div class="language-options" id="menuLanguageOptions">
+                            <div class="language-option" id="menuLangEn" data-lang="en">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/v1l8jw5n_expires_30_days.png" alt="English">
+                                <span>English</span>
+                                <div class="check-icon">✓</div>
+                            </div>
+                            <div class="language-option" id="menuLangHi" data-lang="hi">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/kw66d0ut_expires_30_days.png" alt="Hindi">
+                                <span>हिंदी (Hindi)</span>
+                                <div class="check-icon">✓</div>
+                            </div>
+                        </div>
+
+                        <div class="menu-auth-buttons">
+                            <button class="btn-signin">SIGN IN</button>
+                            <button class="btn-signup">SIGN UP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Selection Bar -->
+        <div class="language-bar" id="languageBar">
+            <div class="language-bar-left">
+                <span>Select Language</span>
+            </div>
+            <div class="language-bar-center">
+                <button class="language-option-btn active" data-lang="en">English</button>
+                <button class="language-option-btn" data-lang="hi">हिंदी</button>
+            </div>
+            <div class="language-bar-right">
+                <button class="language-continue-btn" id="languageContinue">Continue</button>
+                <button class="language-cancel-btn" id="languageCancel">✕</button>
+            </div>
+        </div>
+
+        <!-- Hero Section (Minimalist & Attractive) -->
+        <section class="hero" data-scroll-section>
+            <video class="hero-bg-video" autoplay loop muted playsinline>
+                <source src="shoes.mp4" type="video/mp4">
+            </video>
+            <div class="hero-content">
+                <div class="hero-text-wrapper">
+                    <h1><span>BORN TO</span> <span>CRUSH LAND</span></h1>
+                    <p>From gully cricket to the world's biggest stage, the game remains the same—you have to beat the odds.</p>
+                </div>
+                
+                <div class="hero-btn-container">
+                    <button class="btn-customization">
+                        <span>Customize</span>
+                    </button>
+                    <button class="btn-watch" onclick="alert('Watch Video!')">
+                        <span>Watch</span>
+                        <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/7f3xyr7d_expires_30_days.png" alt="Play">
+                    </button>
+                </div>
+            </div>
+
+            <div class="play-pause-container">
+                <button class="play-pause-btn" id="playPauseBtn" aria-label="Pause animation">
+                    <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/x8w607oh_expires_30_days.png" alt="Pause">
+                </button>
+            </div>
+        </section>
+
+        <!-- Featured Section -->
+        <div class="featured" data-scroll-section id="featuredSection">
+            <div class="featured-bg-overlay" id="yellowBg"></div>
+            <div class="featured-content-wrapper">
+                <h2 class="section-header">Featured</h2>
+                <div class="featured-grid">
+                    <!-- Left Card -->
+                    <div class="feat-card feat-card-left">
+                        <div class="shoe-display">
+                            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/icom2h5n_expires_30_days.png" alt="Nike Shoe 1">
+                            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/icom2h5n_expires_30_days.png" alt="Nike Shoe 2">
+                            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/icom2h5n_expires_30_days.png" alt="Nike Shoe 3">
+                        </div>
+                        <div class="feat-card-content">
+                            <p class="feat-card-subtitle">Best Sellers</p>
+                            <h3 class="feat-card-title">Refresh Your Sneaker Rotation</h3>
+                            <a href="#" class="feat-link">Shop</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Card -->
+                    <div class="feat-card feat-card-right">
+                        <div class="flying-shoes-container">
+                            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/y3vp83ao_expires_30_days.png" alt="Shoe 1">
+                            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/o2fr9l4o_expires_30_days.png" alt="Shoe 2">
+                            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/kj4435lg_expires_30_days.png" alt="Shoe 3">
+                        </div>
+                        <div class="feat-card-content">
+                            <p class="feat-card-subtitle">New Collection</p>
+                            <h3 class="feat-card-title">Other shoes product info</h3>
+                            <a href="#" class="feat-link">Explore</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Arrivals -->
+        <section class="new-arrivals" data-scroll-section>
+            <div class="container">
+                <h2 class="na-header" data-scroll>NEW ARRIVALS</h2>
+                
+                <div class="product-grid">
+                    <!-- Product 1 -->
+                    <div class="product-card">
+                        <div class="card-inner">
+                            <div class="prod-title">Astra Art-Walk</div>
+                            <div class="shoe-box">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/szghuyuh_expires_30_days.png" class="prod-img" alt="Astra Art-Walk">
+                            </div>
+                            <div class="info-row">
+                                <div class="rating">
+                                    <span>★★★★★</span>
+                                    <span class="rating-count">(5.0)</span>
+                                </div>
+                                <div class="prod-price">₹12,499</div>
+                            </div>
+                            <div class="btn-container">
+                                <div class="icon-area">
+                                    <svg class="bag-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                    </svg>
+                                </div>
+                                <button class="add-btn">Add to Bag</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="product-card">
+                        <div class="card-inner">
+                            <div class="prod-title">Astra Heritage Glide</div>
+                            <div class="shoe-box">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/1vynbveb_expires_30_days.png" class="prod-img" alt="Astra Heritage Glide">
+                            </div>
+                            <div class="info-row">
+                                <div class="rating">
+                                    <span>★★★★</span>
+                                    <span class="rating-count">(4.5)</span>
+                                </div>
+                                <div class="prod-price">₹9,499</div>
+                            </div>
+                            <div class="btn-container">
+                                <div class="icon-area">
+                                    <svg class="bag-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                    </svg>
+                                </div>
+                                <button class="add-btn">Add to Bag</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="product-card">
+                        <div class="card-inner">
+                            <div class="prod-title">Astra Urban Flux</div>
+                            <div class="shoe-box">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/ttamncva_expires_30_days.png" class="prod-img" alt="Astra Urban Flux">
+                            </div>
+                            <div class="info-row">
+                                <div class="rating">
+                                    <span>★★★★★</span>
+                                    <span class="rating-count">(4.8)</span>
+                                </div>
+                                <div class="prod-price">₹10,999</div>
+                            </div>
+                            <div class="btn-container">
+                                <div class="icon-area">
+                                    <svg class="bag-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                    </svg>
+                                </div>
+                                <button class="add-btn">Add to Bag</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="product-card">
+                        <div class="card-inner">
+                            <div class="prod-title">Astra Volt '98</div>
+                            <div class="shoe-box">
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/22ax6ldh_expires_30_days.png" class="prod-img" alt="Astra Volt '98">
+                            </div>
+                            <div class="info-row">
+                                <div class="rating">
+                                    <span>★★★★</span>
+                                    <span class="rating-count">(4.3)</span>
+                                </div>
+                                <div class="prod-price">₹11,999</div>
+                            </div>
+                            <div class="btn-container">
+                                <div class="icon-area">
+                                    <svg class="bag-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                    </svg>
+                                </div>
+                                <button class="add-btn">Add to Bag</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="browse-btn-container">
+                    <button class="browse-btn">Browse All Shoes</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Played Section (Section 4) -->
+        <!-- REMOVED -->
+
+        <!-- Fold Effect Section (Section 4) -->
+        <div class="screen fold-effect-section" data-scroll-section id="fold-effect">
+            <div class="wrapper-3d">
+                <div class="fold fold-top">
+                    <div class="fold-align">
+                        <div class="fold-content">
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Creators.Creators.<span class="-focus">Creators.</span>Creators.Creators.Creators.Creators.Creators.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Thinkers.Thinkers.<span class="-focus">Thinkers.</span>Thinkers.Thinkers.Thinkers.Thinkers.Thinkers.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Innovators.Innovators.<span class="-focus">Innovators.</span>Innovators.Innovators.Innovators.Innovators.Innovators.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Rebels.Rebels.Rebels.<span class="-focus">Rebels.</span>Rebels.Rebels.Rebels.Rebels.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fold fold-center" id="center-fold">
+                    <div class="fold-align">
+                        <div class="fold-content" id="center-content">
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Creators.Creators.<span class="-focus">Creators.</span>Creators.Creators.Creators.Creators.Creators.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Thinkers.Thinkers.<span class="-focus">Thinkers.</span>Thinkers.Thinkers.Thinkers.Thinkers.Thinkers.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Innovators.Innovators.<span class="-focus">Innovators.</span>Innovators.Innovators.Innovators.Innovators.Innovators.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Rebels.Rebels.Rebels.<span class="-focus">Rebels.</span>Rebels.Rebels.Rebels.Rebels.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fold fold-bottom">
+                    <div class="fold-align">
+                        <div class="fold-content">
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Creators.Creators.<span class="-focus">Creators.</span>Creators.Creators.Creators.Creators.Creators.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Thinkers.Thinkers.<span class="-focus">Thinkers.</span>Thinkers.Thinkers.Thinkers.Thinkers.Thinkers.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Innovators.Innovators.<span class="-focus">Innovators.</span>Innovators.Innovators.Innovators.Innovators.Innovators.</span>
+                                </div>
+                            </div>
+                            <div class="marquee">
+                                <div class="track">
+                                    <span class="text">Rebels.Rebels.Rebels.<span class="-focus">Rebels.</span>Rebels.Rebels.Rebels.Rebels.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Visuals & CTA -->
+        <section class="footer-visuals" data-scroll-section>
+            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/vce002yq_expires_30_days.png" class="asset-flower" data-scroll data-scroll-speed="2" data-scroll-direction="horizontal" alt="Flower">
+            <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/t8nwt8d3_expires_30_days.png" class="asset-gold" data-scroll data-scroll-speed="-2" data-scroll-direction="vertical" alt="Bitcoin">
+
+            <button class="btn-white" onclick="alert('Store Link')">GO TO ASTRA STORE</button>
+
+            <div class="credits">-LOVE BY PRAKHAR DEV</div>
+        </section>
+
+        <!-- Legal Footer -->
+        <footer class="legal-footer" data-scroll-section>
+            <div class="container legal-inner">
+                <div class="footer-links">
+                    <a href="#">ABOUT US</a>
+                    <a href="#">TERMS & CONDITIONS</a>
+                </div>
+
+                <div class="socials">
+                    <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/54vj3bjn_expires_30_days.png" alt="Insta">
+                    <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/p4d2aljc_expires_30_days.png" alt="Twitter">
+                    <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/jqat75we_expires_30_days.png" alt="FB">
+                </div>
+
+                <div class="copyright">
+                    2026 Astra Sneakers. All rights reserved.
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Locomotive Scroll Script - Deferred for performance -->
+    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js" defer></script>
+    
+    <!-- Main Application Script - Deferred and optimized -->
+    <script defer>
+        // Wait for all deferred scripts to load
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check if required libraries are loaded
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof LocomotiveScroll === 'undefined') {
+                console.warn('Waiting for libraries to load...');
+                setTimeout(initializeApp, 100);
+                return;
+            }
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Wrap all initialization in a function to avoid blocking
+            requestAnimationFrame(() => {
+        // Initialize Locomotive Scroll
+        const scroll = new LocomotiveScroll({
+            el: document.querySelector('[data-scroll-container]'),
+            smooth: true,
+            multiplier: 1,
+            smartphone: { smooth: true },
+            tablet: { smooth: true }
+        });
+        
+        window.addEventListener('resize', () => scroll.update());
+
+        // Header Scroll Effect & Sticky Navigation
+        const mainHeader = document.getElementById('mainHeader');
+        const stickyNav = document.getElementById('stickyNav');
+        let lastScrollY = 0;
+
+        scroll.on('scroll', (args) => {
+            const scrollY = args.scroll.y;
+            
+            // Header size on scroll
+            if (scrollY > 50) {
+                mainHeader.classList.add('scrolled');
+            } else {
+                mainHeader.classList.remove('scrolled');
+            }
+
+            // Show sticky nav when scrolling down past hero section (mobile only)
+            if (window.innerWidth <= 768) {
+                if (scrollY > window.innerHeight * 0.8 && scrollY > lastScrollY) {
+                    stickyNav.classList.add('show');
+                } else if (scrollY < window.innerHeight * 0.5 || scrollY < lastScrollY) {
+                    stickyNav.classList.remove('show');
+                }
+            }
+
+            lastScrollY = scrollY;
+        });
+
+        // GSAP ScrollTrigger with Locomotive Scroll
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Update ScrollTrigger on Locomotive Scroll
+        scroll.on('scroll', ScrollTrigger.update);
+
+        ScrollTrigger.scrollerProxy('[data-scroll-container]', {
+            scrollTop(value) {
+                return arguments.length
+                    ? scroll.scrollTo(value, 0, 0)
+                    : scroll.scroll.instance.scroll.y;
+            },
+            getBoundingClientRect() {
+                return {
+                    top: 0,
+                    left: 0,
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                };
+            },
+            pinType: document.querySelector('[data-scroll-container]').style.transform
+                ? 'transform'
+                : 'fixed'
+        });
+
+        // Search Overlay Functionality
+        const searchBtn = document.getElementById('searchBtn');
+        const searchOverlay = document.getElementById('searchOverlay');
+        const searchCancel = document.getElementById('searchCancel');
+        const searchInput = document.getElementById('searchInput');
+
+        searchBtn.addEventListener('click', () => {
+            searchOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                searchInput.focus();
+            }, 400);
+        });
+
+        searchCancel.addEventListener('click', () => {
+            searchOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            searchInput.value = '';
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (searchOverlay.classList.contains('active')) {
+                    searchOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    searchInput.value = '';
+                }
+                if (menuOverlay.classList.contains('active')) {
+                    menuOverlay.classList.remove('active');
+                    hamburgerBtn.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        // Hamburger Menu Functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuClose = document.getElementById('menuClose');
+
+        hamburgerBtn.addEventListener('click', () => {
+            menuOverlay.classList.add('active');
+            hamburgerBtn.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        menuClose.addEventListener('click', () => {
+            menuOverlay.classList.remove('active');
+            hamburgerBtn.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        // Close menu when clicking outside content
+        menuOverlay.addEventListener('click', (e) => {
+            if (e.target === menuOverlay) {
+                menuOverlay.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Language Toggle Functionality
+        const languageToggle = document.getElementById('menuLanguageToggle');
+        const languageOptions = document.getElementById('menuLanguageOptions');
+        const languageOptionItems = document.querySelectorAll('#menuLanguageOptions .language-option');
+        const menuLangEn = document.getElementById('menuLangEn');
+        const menuLangHi = document.getElementById('menuLangHi');
+
+        // Set initial active state based on localStorage
+        const currentLang = localStorage.getItem('astraLanguage') || 'en';
+        if (currentLang === 'hi') {
+            menuLangHi.classList.add('active');
+            menuLangEn.classList.remove('active');
+        } else {
+            menuLangEn.classList.add('active');
+            menuLangHi.classList.remove('active');
+        }
+
+        if (languageToggle && languageOptions) {
+            languageToggle.addEventListener('click', () => {
+                languageOptions.classList.toggle('show');
+            });
+
+            languageOptionItems.forEach(option => {
+                option.addEventListener('click', () => {
+                    const newLang = option.getAttribute('data-lang');
+                    
+                    // Remove active class from all options
+                    languageOptionItems.forEach(opt => opt.classList.remove('active'));
+                    // Add active class to clicked option
+                    option.classList.add('active');
+                    
+                    // Save to localStorage
+                    localStorage.setItem('astraLanguage', newLang);
+                    localStorage.setItem('astraLanguageSelected', 'true');
+                    
+                    // Apply language changes
+                    if (newLang === 'hi') {
+                        applyHindiTranslations();
+                    } else {
+                        applyEnglishTranslations();
+                    }
+                    
+                    // Close the language options after selection
+                    setTimeout(() => {
+                        languageOptions.classList.remove('show');
+                    }, 500);
+                    
+                    // Update scroll
+                    scroll.update();
+                });
+            });
+        }
+
+        // Hero Section Animations
+        gsap.to('.hero h1', {
+            opacity: 1,
+            x: 0,
+            duration: 1.2,
+            ease: 'power3.out',
+            delay: 0.3
+        });
+
+        gsap.to('.hero p', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power2.out',
+            delay: 0.6
+        });
+
+        gsap.to('.hero-btn-container', {
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: 'back.out(1.7)',
+            delay: 0.9
+        });
+
+        gsap.to('.play-pause-container', {
+            opacity: 1,
+            rotation: 0,
+            scale: 1,
+            duration: 1,
+            ease: 'elastic.out(1, 0.5)',
+            delay: 1.2
+        });
+
+        // Featured Section - Yellow Background Animation
+        const featuredSection = document.getElementById('featuredSection');
+        const yellowBg = document.getElementById('yellowBg');
+        
+        // Method 1: Direct GSAP animation on the overlay element
+        const yellowBgAnimation = gsap.to(yellowBg, {
+            y: '0%',
+            ease: 'power2.out',
+            paused: true,
+            duration: 1
+        });
+
+        // Method 2: ScrollTrigger with proper configuration
+        ScrollTrigger.create({
+            trigger: featuredSection,
+            scroller: '[data-scroll-container]',
+            start: 'top 75%',
+            end: 'top 25%',
+            scrub: 1,
+            onUpdate: (self) => {
+                // Animate the yellow background based on scroll progress
+                const progress = self.progress;
+                gsap.to(yellowBg, {
+                    y: `${(1 - progress) * 100}%`,
+                    duration: 0.1,
+                    ease: 'none'
+                });
+                
+                // Add class when fully visible
+                if (progress > 0.8) {
+                    featuredSection.classList.add('yellow-active');
+                } else {
+                    featuredSection.classList.remove('yellow-active');
+                }
+            },
+            markers: false // Set to true for debugging
+        });
+
+        // Animate content when section enters viewport
+        ScrollTrigger.create({
+            trigger: featuredSection,
+            scroller: '[data-scroll-container]',
+            start: 'top 70%',
+            once: true,
+            onEnter: () => {
+                // Animate section header
+                gsap.to('.section-header', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    ease: 'power3.out',
+                    delay: 0.3
+                });
+                
+                // Animate cards with stagger
+                gsap.to('.feat-card', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1.2,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 0.5
+                });
+            }
+        });
+
+        // Alternative: Use Locomotive Scroll's native scroll event
+        scroll.on('scroll', (args) => {
+            const scrollY = args.scroll.y;
+            const featuredTop = featuredSection.offsetTop;
+            const windowHeight = window.innerHeight;
+            
+            // Calculate when to start animation
+            const triggerPoint = featuredTop - windowHeight * 0.7;
+            const endPoint = featuredTop - windowHeight * 0.3;
+            
+            if (scrollY > triggerPoint && scrollY < endPoint) {
+                const progress = (scrollY - triggerPoint) / (endPoint - triggerPoint);
+                const clampedProgress = Math.max(0, Math.min(1, progress));
+                
+                // Apply transform directly
+                yellowBg.style.transform = `translateY(${(1 - clampedProgress) * 100}%)`;
+            } else if (scrollY >= endPoint) {
+                yellowBg.style.transform = 'translateY(0%)';
+            } else {
+                yellowBg.style.transform = 'translateY(100%)';
+            }
+        });
+
+        // Shoe Images Continuous Float Animation
+        const shoeImages = document.querySelectorAll('.shoe-display img, .flying-shoes-container img');
+        shoeImages.forEach((img, index) => {
+            gsap.to(img, {
+                y: -12,
+                duration: 2 + (index * 0.25),
+                ease: 'sine.inOut',
+                repeat: -1,
+                yoyo: true,
+                delay: index * 0.15
+            });
+        });
+
+        // Language Selection Functionality with localStorage
+        const languageBar = document.getElementById('languageBar');
+        const languageButtons = document.querySelectorAll('.language-option-btn');
+        const languageContinue = document.getElementById('languageContinue');
+        const languageCancel = document.getElementById('languageCancel');
+        let selectedLanguage = localStorage.getItem('astraLanguage') || 'en';
+
+        // Check if language was already selected
+        const languageSelected = localStorage.getItem('astraLanguageSelected');
+        if (languageSelected === 'true') {
+            languageBar.style.display = 'none';
+            if (selectedLanguage === 'hi') {
+                applyHindiTranslations();
+            }
+        } else {
+            // Set initial active button
+            languageButtons.forEach(btn => {
+                if (btn.getAttribute('data-lang') === selectedLanguage) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        languageButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                languageButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedLanguage = btn.getAttribute('data-lang');
+                localStorage.setItem('astraLanguage', selectedLanguage);
+            });
+        });
+
+        languageContinue.addEventListener('click', () => {
+            // Save selection to localStorage
+            localStorage.setItem('astraLanguageSelected', 'true');
+            
+            // Hide language bar with animation
+            languageBar.style.transform = 'translateY(-100%)';
+            languageBar.style.opacity = '0';
+            
+            setTimeout(() => {
+                languageBar.style.display = 'none';
+                
+                // Apply language changes
+                if (selectedLanguage === 'hi') {
+                    applyHindiTranslations();
+                } else {
+                    applyEnglishTranslations();
+                }
+                
+                // Update scroll
+                scroll.update();
+            }, 300);
+        });
+
+        languageCancel.addEventListener('click', () => {
+            // Hide language bar without saving
+            languageBar.style.transform = 'translateY(-100%)';
+            languageBar.style.opacity = '0';
+            
+            setTimeout(() => {
+                languageBar.style.display = 'none';
+                scroll.update();
+            }, 300);
+        });
+
+        // Hindi Translations
+        function applyHindiTranslations() {
+            // Hero Section
+            const heroH1 = document.querySelector('.hero h1');
+            const heroP = document.querySelector('.hero p');
+            if (heroH1) heroH1.innerHTML = '<span>जमीन को</span> <span>कुचलने के लिए जन्मे</span>';
+            if (heroP) heroP.textContent = 'गली क्रिकेट से लेकर दुनिया के सबसे बड़े मंच तक, खेल वही रहता है—आपको बाधाओं को हराना होगा।';
+            
+            // Buttons
+            const customizationBtn = document.querySelector('.btn-customization span');
+            const watchBtn = document.querySelector('.btn-watch span');
+            if (customizationBtn) customizationBtn.textContent = 'अनुकूलित करें';
+            if (watchBtn) watchBtn.textContent = 'देखें';
+            
+            // Featured Section
+            const featuredHeader = document.querySelector('.section-header');
+            if (featuredHeader) featuredHeader.textContent = 'विशेष रुप से प्रदर्शित';
+            
+            // New Arrivals
+            const naHeader = document.querySelector('.na-header');
+            if (naHeader) naHeader.textContent = 'नए आगमन';
+            
+            const browseBtn = document.querySelector('.browse-btn');
+            if (browseBtn) browseBtn.textContent = 'सभी जूते ब्राउज़ करें';
+            
+            // Footer
+            const footerBtn = document.querySelector('.btn-white');
+            if (footerBtn) footerBtn.textContent = 'एस्ट्रा स्टोर पर जाएं';
+
+            // Hamburger Menu Items
+            updateHamburgerMenuLanguage('hi');
+        }
+
+        // English Translations (Reset)
+        function applyEnglishTranslations() {
+            const heroH1 = document.querySelector('.hero h1');
+            const heroP = document.querySelector('.hero p');
+            if (heroH1) heroH1.innerHTML = '<span>BORN TO</span> <span>CRUSH LAND</span>';
+            if (heroP) heroP.textContent = 'From gully cricket to the world\'s biggest stage, the game remains the same—you have to beat the odds.';
+            
+            const customizationBtn = document.querySelector('.btn-customization span');
+        // Play/Pause Button
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const heroVideo = document.querySelector('.hero-bg-video');
+        const playPauseIcon = playPauseBtn ? playPauseBtn.querySelector('img') : null;
+        
+        if (playPauseBtn && heroVideo) {
+            let isVideoPaused = false;
+            
+            playPauseBtn.addEventListener('click', () => {
+                isVideoPaused = !isVideoPaused;
+                
+                if (isVideoPaused) {
+                    heroVideo.pause();
+                    playPauseBtn.style.opacity = '0.5';
+                    // Change icon to play icon
+                    if (playPauseIcon) {
+                        playPauseIcon.src = 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/7f3xyr7d_expires_30_days.png';
+                        playPauseBtn.setAttribute('aria-label', 'Play video');
+                    }
+                } else {
+                    heroVideo.play();
+                    playPauseBtn.style.opacity = '1';
+                    // Change icon to pause icon
+                    if (playPauseIcon) {
+                        playPauseIcon.src = 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/uYQ1huV4zO/x8w607oh_expires_30_days.png';
+                        playPauseBtn.setAttribute('aria-label', 'Pause video');
+                    }
+                }
+            });
+        }
+
+        // Hide loading spinner after everything is loaded
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        
+        // Hide spinner when page is fully loaded
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('hidden');
+                }
+            }, 500);
+        });
+
+        // Also hide spinner after videos are loaded
+        if (heroVideo) {
+            heroVideo.addEventListener('loadeddata', () => {
+                console.log('Hero video loaded');
+            });
+        }
+
+        const exploreVideo = document.querySelector('.explore-shoes-video');
+        if (exploreVideo) {
+            exploreVideo.addEventListener('loadeddata', () => {
+                console.log('Explore video loaded');
+            });
+        }
+            // Hamburger Menu Items
+            updateHamburgerMenuLanguage('en');
+        }
+
+        // Update Hamburger Menu Language
+        function updateHamburgerMenuLanguage(lang) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const menuHeaders = document.querySelectorAll('.menu-header span');
+            const categoryTitle = document.querySelector('.menu-category-title');
+            const subcategory = document.querySelector('.menu-subcategory span');
+            const paymentHeader = document.querySelector('.payment-header span');
+            const rewardsItem = document.querySelector('.rewards-item span');
+            const footerItems = document.querySelectorAll('.menu-footer-item span');
+            const signinBtn = document.querySelector('.btn-signin');
+            const signupBtn = document.querySelector('.btn-signup');
+
+            if (lang === 'hi') {
+                // Menu Header
+                if (menuHeaders[0]) menuHeaders[0].textContent = 'जूते देखें';
+                
+                // Menu Items
+                if (menuItems[0]) menuItems[0].textContent = 'नए आगमन';
+                if (menuItems[1]) menuItems[1].textContent = 'सर्वश्रेष्ठ विक्रेता';
+                if (menuItems[2]) menuItems[2].textContent = 'पसंदीदा';
+                if (menuItems[3]) menuItems[3].textContent = 'मेरी कार्ट';
+                if (menuItems[4]) menuItems[4].textContent = 'ऑर्डर ट्रैक करें';
+                
+                // Category
+                if (categoryTitle) categoryTitle.textContent = 'जूते';
+                if (subcategory) subcategory.textContent = 'स्नीकर्स';
+                
+                // Payment
+                if (paymentHeader) paymentHeader.textContent = 'भुगतान';
+                
+                // Rewards
+                if (rewardsItem) rewardsItem.textContent = 'पुरस्कार (जल्द आ रहा है)';
+                
+                // Footer Items
+                if (footerItems[0]) footerItems[0].textContent = 'सेटिंग्स';
+                if (footerItems[1]) footerItems[1].textContent = 'भाषा';
+                if (footerItems[2]) footerItems[2].textContent = 'एस्ट्रा स्टोर';
+                
+                // Buttons
+                if (signinBtn) signinBtn.textContent = 'साइन इन करें';
+                if (signupBtn) signupBtn.textContent = 'साइन अप करें';
+            } else {
+                // English
+                if (menuHeaders[0]) menuHeaders[0].textContent = 'Explore Shoes';
+                
+                if (menuItems[0]) menuItems[0].textContent = 'New Arrivals';
+                if (menuItems[1]) menuItems[1].textContent = 'Best Sellers';
+                if (menuItems[2]) menuItems[2].textContent = 'Favorites';
+                if (menuItems[3]) menuItems[3].textContent = 'My Cart';
+                if (menuItems[4]) menuItems[4].textContent = 'Track Order';
+                
+                if (categoryTitle) categoryTitle.textContent = 'Shoes';
+                if (subcategory) subcategory.textContent = 'Sneakers';
+                
+                if (paymentHeader) paymentHeader.textContent = 'Payments';
+                
+                if (rewardsItem) rewardsItem.textContent = 'Rewards (coming soon)';
+                
+                if (footerItems[0]) footerItems[0].textContent = 'Settings';
+                if (footerItems[1]) footerItems[1].textContent = 'Language';
+                if (footerItems[2]) footerItems[2].textContent = 'Astra Store';
+                
+                if (signinBtn) signinBtn.textContent = 'SIGN IN';
+                if (signupBtn) signupBtn.textContent = 'SIGN UP';
+            }
+        }
+
+        // Refresh ScrollTrigger after load
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+            scroll.update();
+        }, 1500);
+
+        // Fold Effect Section Animation
+        const foldEffectSection = document.querySelector('.fold-effect-section');
+        if (foldEffectSection) {
+            // Marquee animations
+            gsap.utils.toArray('.marquee').forEach((el, index) => {
+                const track = el.querySelector('.track');
+                const text = track.querySelector('.text');
+                
+                // Clone text for seamless loop
+                const clone = text.cloneNode(true);
+                track.appendChild(clone);
+                
+                const [x, xEnd] = (index % 2 === 0) ? [0, -1000] : [0, -1500];
+                
+                gsap.fromTo(track, 
+                    { x }, 
+                    {
+                        x: xEnd,
+                        scrollTrigger: {
+                            trigger: foldEffectSection,
+                            scroller: '[data-scroll-container]',
+                            start: 'top bottom',
+                            end: 'bottom top',
+                            scrub: 1
+                        }
+                    }
+                );
+            });
+
+            // Fold content scroll effect
+            const centerContent = document.getElementById('center-content');
+            const centerFold = document.getElementById('center-fold');
+            const foldsContent = Array.from(document.querySelectorAll('.fold-content'));
+
+            if (centerContent && centerFold && foldsContent.length > 0) {
+                scroll.on('scroll', (args) => {
+                    const scrollY = args.scroll.y;
+                    const sectionTop = foldEffectSection.offsetTop;
+                    const sectionHeight = foldEffectSection.offsetHeight;
+                    
+                    if (scrollY > sectionTop - window.innerHeight && scrollY < sectionTop + sectionHeight) {
+                        const progress = (scrollY - (sectionTop - window.innerHeight)) / (sectionHeight + window.innerHeight);
+                        const translateY = -(progress * centerContent.clientHeight * 0.5);
+                        
+                        foldsContent.forEach(content => {
+                            content.style.transform = `translateY(${translateY}px)`;
+                        });
+                    }
+                });
+            }
+        }
+
+        // Refresh on resize
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+                scroll.update();
+            }, 300);
+        });
+
+        // Play/Pause Button
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        if (playPauseBtn) {
+            let isPaused = false;
+            playPauseBtn.addEventListener('click', () => {
+                isPaused = !isPaused;
+                
+                if (isPaused) {
+                    gsap.globalTimeline.pause();
+                    playPauseBtn.style.opacity = '0.5';
+                } else {
+                    gsap.globalTimeline.resume();
+                    playPauseBtn.style.opacity = '1';
+                }
+            });
+        }
+            }); // End requestAnimationFrame
+        } // End initializeApp
+    </script>
+    
+    <!-- Service Worker for Caching (Optional - Uncomment to enable) -->
+    <script>
+        // Register service worker for offline caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {
+                    // Service worker registration failed, continue without it
+                });
+            });
+        }
+    </script>
+</body>
+</html>
