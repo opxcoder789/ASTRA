@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ASTRA Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h1>ASTRA Admin</h1>
+            <form id="loginForm">
+                <input type="password" id="passwordInput" placeholder="Enter Password" required>
+                <button type="submit">Login</button>
+                <p id="loginError" class="error-msg"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-dashboard" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>ASTRA Admin</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-section="products">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Products
+                </button>
+                <button class="nav-btn" data-section="landing">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                    </svg>
+                    Landing Page
+                </button>
+                <button class="nav-btn" data-section="hero">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                    Hero Videos
+                </button>
+                <button id="logoutBtn" class="nav-btn logout-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Products Section -->
+            <section id="productsSection" class="content-section active">
+                <div class="section-header">
+                    <h1>Products Management</h1>
+                    <button id="addProductBtn" class="btn-primary">+ Add Product</button>
+                </div>
+                <div id="productsList" class="products-grid"></div>
+            </section>
+
+            <!-- Landing Page Section -->
+            <section id="landingSection" class="content-section">
+                <div class="section-header">
+                    <h1>Landing Page Management</h1>
+                    <button id="addCardBtn" class="btn-primary">+ Add Card</button>
+                </div>
+                <div id="landingCardsList" class="cards-grid"></div>
+            </section>
+
+            <!-- Hero Videos Section -->
+            <section id="heroSection" class="content-section">
+                <div class="section-header">
+                    <h1>Hero Videos Management</h1>
+                    <button id="addVideoBtn" class="btn-primary">+ Add Video</button>
+                </div>
+                <div id="heroVideosList" class="videos-grid"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="productModalTitle">Add Product</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                
+                <div class="form-group">
+                    <label>Product Titlee *</label>
+                    <input type="text" id="productTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="productDescription" rows="4"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price (Rs.) *</label>
+                        <input type="number" id="productPrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" id="productCategory" placeholder="e.g., Shoes, T-shirts">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="productSoldOut">
+                        Mark as Sold Out
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Has Color Variants?</label>
+                    <label class="radio-label">
+                        <input type="radio" name="hasColors" value="no" checked>
+                        No
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="hasColors" value="yes">
+                        Yes
+                    </label>
+                </div>
+
+                <div id="colorSection" style="display: none;">
+                    <div class="form-group">
+                        <label>Colors</label>
+                        <div id="colorsList"></div>
+                        <button type="button" id="addColorBtn" class="btn-secondary">+ Add Color</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Product Images (Max 50)</label>
+                    <input type="file" id="productImages" multiple accept="image/*">
+                    <div id="imagePreview" class="image-preview-grid"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Card Modal -->
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Landing Card</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="cardForm">
+                <input type="hidden" id="cardId">
+                
+                <div class="form-group">
+                    <label>Card Title</label>
+                    <input type="text" id="cardTitle">
+                </div>
+
+                <div class="form-group">
+                    <label>Link URL</label>
+                    <input type="url" id="cardLink" placeholder="https://...">
+                </div>
+
+                <div class="form-group">
+                    <label>Card Image *</label>
+                    <input type="file" id="cardImage" accept="image/*" required>
+                    <div id="cardImagePreview"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Card</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Hero Video</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="videoForm">
+                <div class="form-group">
+                    <label>Video File *</label>
+                    <input type="file" id="heroVideo" accept="video/*" required>
+                    <p class="help-text">Max size: 50MB. Formats: MP4, WebM</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn-primary">Upload Video</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Config & API -->
+    <script src="../backend/config.js"></script>
+    <script src="../backend/api.js"></script>
+    
+    <!-- Initialize API Directly Here -->
+    <script>
+        console.log('🔧 Initializing API directly in HTML...');
+        
+        // Wait for everything to load
+        window.addEventListener('load', function() {
+            try {
+                console.log('📦 Checking dependencies...');
+                
+                // Check Supabase
+                if (typeof supabase === 'undefined') {
+                    console.error('❌ Supabase library not loaded!');
+                    alert('Error: Supabase library failed to load. Check your internet connection.');
+                    return;
+                }
+                console.log('✅ Supabase library loaded');
+                
+                // Check Config
+                if (typeof SUPABASE_CONFIG === 'undefined') {
+                    console.error('❌ SUPABASE_CONFIG not found!');
+                    alert('Error: Configuration not loaded.');
+                    return;
+                }
+                console.log('✅ Config loaded:', SUPABASE_CONFIG.url);
+                
+                // Check API Class
+                if (typeof SupabaseAPI === 'undefined') {
+                    console.error('❌ SupabaseAPI class not found!');
+                    alert('Error: API class not loaded.');
+                    return;
+                }
+                console.log('✅ API class loaded');
+                
+                // Create Supabase Client
+                console.log('📡 Creating Supabase client...');
+                window.supabaseClient = supabase.createClient(
+                    SUPABASE_CONFIG.url,
+                    SUPABASE_CONFIG.anonKey
+                );
+                console.log('✅ Supabase client created');
+                
+                // Create API Instance
+                console.log('🔨 Creating API instance...');
+                window.API = new SupabaseAPI(window.supabaseClient);
+                console.log('✅ API instance created:', window.API);
+                
+                // Test connection
+                testDatabaseConnection();
+                
+            } catch (error) {
+                console.error('❌ Error initializing API:', error);
+                alert('Error initializing database: ' + error.message);
+            }
+        });
+        
+        async function testDatabaseConnection() {
+            try {
+                console.log('🧪 Testing database connection...');
+                const { data, error } = await window.supabaseClient
+                    .from('products')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) {
+                    console.error('❌ Database error:', error.message);
+                    console.log('💡 Make sure you have run the SQL schema in Supabase');
+                } else {
+                    console.log('✅ Database connected successfully!');
+                }
+            } catch (err) {
+                console.error('❌ Connection test failed:', err);
+            }
+        }
+    </script>
+    
+    <!-- Admin Script with Hardcoded Password -->
+    <script>
+        // HARDCODED PASSWORD - NO DATABASE AUTHENTICATION
+        const ADMIN_PASSWORD = '1223';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Admin panel loaded - Password: 1223');
+            
+            const loginScreen = document.getElementById('loginScreen');
+            const adminDashboard = document.getElementById('adminDashboard');
+            const loginForm = document.getElementById('loginForm');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginError = document.getElementById('loginError');
+
+            // Check if already logged in
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                showDashboard();
+            }
+
+            // Login Handler - PURE JAVASCRIPT, NO DATABASE
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const password = passwordInput.value;
+                
+                console.log('🔐 Checking password...');
+                
+                // HARDCODED PASSWORD CHECK - NO SUPABASE
+                if (password === ADMIN_PASSWORD) {
+                    console.log('✅ Password correct! Logging in...');
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                    showDashboard();
+                    loginError.textContent = '';
+                } else {
+                    console.log('❌ Wrong password');
+                    loginError.textContent = 'Invalid password. Try: 1223';
+                    loginError.style.color = '#ef4444';
+                    loginError.style.marginTop = '10px';
+                    passwordInput.value = '';
+                }
+            });
+
+            function showDashboard() {
+                console.log('📊 Showing dashboard...');
+                loginScreen.style.display = 'none';
+                adminDashboard.style.display = 'flex';
+                
+                // Wait a bit for API to be ready
+                setTimeout(() => {
+                    if (typeof loadProducts === 'function') {
+                        loadProducts();
+                    } else {
+                        console.log('⏳ Waiting for loadProducts function...');
+                    }
+                }, 500);
+            }
+
+            // Logout Handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    sessionStorage.removeItem('adminLoggedIn');
+                    location.reload();
+                });
+            }
+        });
+    </script>
+    <script src="admin-script.js"></script>
+</body>
+</html>

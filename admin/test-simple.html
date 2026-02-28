@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #333;
+        }
+        .success { border-color: #10b981; }
+        .error { border-color: #ef4444; }
+        button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        pre {
+            background: #0a0a0a;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Simple API Test</h1>
+    
+    <div id="status" class="box">
+        <h3>⏳ Initializing...</h3>
+    </div>
+
+    <button onclick="testAPI()">Test API</button>
+    <button onclick="location.href='index.html'">← Back to Admin</button>
+
+    <div id="result"></div>
+
+    <!-- Step 1: Load Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Step 2: Load Config -->
+    <script src="../backend/config.js"></script>
+    
+    <!-- Step 3: Load API Class -->
+    <script src="../backend/api.js"></script>
+    
+    <!-- Step 4: Initialize Everything -->
+    <script>
+        let API = null;
+        
+        window.addEventListener('load', function() {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                console.log('Step 1: Checking Supabase library...');
+                if (typeof supabase === 'undefined') {
+                    throw new Error('Supabase library not loaded');
+                }
+                console.log('✅ Supabase library OK');
+                
+                console.log('Step 2: Checking config...');
+                if (typeof SUPABASE_CONFIG === 'undefined') {
+                    throw new Error('Config not loaded');
+                }
+                console.log('✅ Config OK:', SUPABASE_CONFIG.url);
+                
+                console.log('Step 3: Checking API class...');
+                if (typeof SupabaseAPI === 'undefined') {
+                    throw new Error('API class not loaded');
+                }
+                console.log('✅ API class OK');
+                
+                console.log('Step 4: Creating Supabase client...');
+                const supabaseClient = supabase.createClient(
+                    SUPABASE_CONFIG.url,
+                    SUPABASE_CONFIG.anonKey
+                );
+                console.log('✅ Client created');
+                
+                console.log('Step 5: Creating API instance...');
+                API = new SupabaseAPI(supabaseClient);
+                window.API = API;
+                console.log('✅ API instance created:', API);
+                
+                statusDiv.className = 'box success';
+                statusDiv.innerHTML = `
+                    <h3>✅ API Initialized Successfully!</h3>
+                    <p>URL: ${SUPABASE_CONFIG.url}</p>
+                    <p>API Object: Ready</p>
+                    <pre>${Object.getOwnPropertyNames(Object.getPrototypeOf(API)).filter(m => m !== 'constructor').join('\n')}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                statusDiv.className = 'box error';
+                statusDiv.innerHTML = `
+                    <h3>❌ Initialization Failed</h3>
+                    <p>${error.message}</p>
+                    <p>Check console (F12) for details</p>
+                `;
+            }
+        });
+        
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="box"><h3>⏳ Testing...</h3></div>';
+            
+            try {
+                if (!API) {
+                    throw new Error('API not initialized');
+                }
+                
+                console.log('Testing getAllProducts...');
+                const products = await API.getAllProducts();
+                
+                resultDiv.innerHTML = `
+                    <div class="box success">
+                        <h3>✅ API Test Successful!</h3>
+                        <p>Found ${products.length} products</p>
+                        <pre>${JSON.stringify(products, null, 2)}</pre>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Test failed:', error);
+                resultDiv.innerHTML = `
+                    <div class="box error">
+                        <h3>❌ Test Failed</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

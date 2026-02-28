@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns and Refunds | ASTRA Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #000000; 
+            color: #ffffff; 
+            min-height: 100vh;
+        }
+        .store-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #1a1a1a;
+            height: 66px;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 66px;
+            padding: 0 20px;
+        }
+        .logo-center { flex: 1; display: flex; justify-content: center; }
+        .logo-center img { width: 37px; height: 37px; }
+        .desktop-nav { display: none; gap: 32px; }
+        @media (min-width: 1024px) { .desktop-nav { display: flex; } }
+        .desktop-nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+        .desktop-nav a:hover { opacity: 0.7; }
+        main {
+            padding-top: 150px;
+            padding-bottom: 80px;
+            padding-left: 20px;
+            padding-right: 20px;
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: clamp(48px, 8vw, 64px);
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 40px;
+            letter-spacing: -1px;
+        }
+        .content { max-width: 672px; }
+        .space-y-12 > * + * { margin-top: 48px; }
+        .text-xl {
+            font-size: clamp(20px, 3vw, 24px);
+            font-weight: 500;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        .text-lg {
+            font-size: 18px;
+            opacity: 0.7;
+            line-height: 1.7;
+        }
+        .section-title {
+            font-size: clamp(20px, 3vw, 24px);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #FF5100;
+            margin-bottom: 16px;
+        }
+        .btn-primary {
+            display: inline-block;
+            padding: 16px 40px;
+            border: 2px solid #FF5100;
+            color: #FF5100;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-radius: 8px;
+            text-decoration: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 24px;
+        }
+        .btn-primary:hover {
+            background: #FF5100;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="store-header">
+        <div class="header-inner">
+            <nav class="desktop-nav">
+                <a href="../index.html">Home</a>
+                <a href="store.html">Shop</a>
+            </nav>
+            <div class="logo-center">
+                <a href="../index.html">
+                    <img src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/owr_logo-modified_1-1.png" alt="OWR Logo">
+                </a>
+            </div>
+            <nav class="desktop-nav">
+                <a href="returns.html" style="opacity: 0.7;">Returns</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h1>Returns</h1>
+        <div class="content space-y-12">
+            <p class="text-xl">
+                Every OWR piece is created with intention. If something doesn't align, here's how returns work — simple, clear, and fair.
+            </p>
+            
+            <div>
+                <h2 class="section-title">Return Window</h2>
+                <p class="text-lg">
+                    A return request can be placed within 48 hours of order delivery. Requests raised after this window will not be eligible for return.
+                </p>
+            </div>
+            
+            <div>
+                <button class="btn-primary" onclick="alert('Return booking system coming soon!')">
+                    Book / Track Return
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

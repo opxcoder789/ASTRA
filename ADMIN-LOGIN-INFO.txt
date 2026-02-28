@@ -1,0 +1,47 @@
+========================================
+   ADMIN PANEL LOGIN - HARDCODED
+========================================
+
+✅ PASSWORD IS HARDCODED IN SOURCE CODE
+✅ NO DATABASE AUTHENTICATION
+✅ PURE JAVASCRIPT CHECK
+
+========================================
+   HOW TO ACCESS
+========================================
+
+1. Open: NEW APP/admin/index.html
+2. Enter Password: 1223
+3. Click Login
+
+========================================
+   HOW IT WORKS
+========================================
+
+- Password '1223' is hardcoded in index.html
+- JavaScript checks: if (password === '1223')
+- NO Supabase authentication
+- NO database query
+- Session stored locally in browser
+
+========================================
+   PASSWORD LOCATION
+========================================
+
+File: NEW APP/admin/index.html
+Line: ~237
+Code: const ADMIN_PASSWORD = '1223';
+
+========================================
+   TO CHANGE PASSWORD
+========================================
+
+1. Open: NEW APP/admin/index.html
+2. Find: const ADMIN_PASSWORD = '1223';
+3. Change '1223' to your new password
+4. Save file
+
+========================================
+
+✅ READY TO USE!
+Password: 1223

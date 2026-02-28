@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .status {
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+        .success { border-color: #10b981; background: #1a3a1a; }
+        .error { border-color: #ef4444; background: #3a1a1a; }
+        .info { border-color: #3b82f6; background: #1a2a3a; }
+        button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        pre {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 API Initialization Check</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="checkAll()">🔄 Check Again</button>
+    <button onclick="location.href='index.html'">← Back to Admin</button>
+
+    <!-- Load scripts in order -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../backend/config.js"></script>
+    <script src="../backend/api.js"></script>
+    
+    <!-- Initialize API -->
+    <script>
+        window.addEventListener('load', function() {
+            try {
+                if (typeof supabase !== 'undefined' && typeof SUPABASE_CONFIG !== 'undefined' && typeof SupabaseAPI !== 'undefined') {
+                    window.supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+                    window.API = new SupabaseAPI(window.supabaseClient);
+                    console.log('✅ API initialized in check page');
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+            }
+        });
+    </script>
+
+    <script>
+        function addResult(title, message, type) {
+            const div = document.createElement('div');
+            div.className = 'status ' + type;
+            div.innerHTML = `<h3>${title}</h3><p>${message}</p>`;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function checkAll() {
+            document.getElementById('results').innerHTML = '';
+            
+            // Check 1: Supabase library
+            if (typeof supabase !== 'undefined') {
+                addResult('✅ Supabase Library', 'Loaded successfully', 'success');
+            } else {
+                addResult('❌ Supabase Library', 'NOT LOADED - Check internet connection', 'error');
+            }
+
+            // Check 2: Config
+            if (typeof SUPABASE_CONFIG !== 'undefined') {
+                addResult('✅ Config', `URL: ${SUPABASE_CONFIG.url}`, 'success');
+            } else {
+                addResult('❌ Config', 'SUPABASE_CONFIG not found', 'error');
+            }
+
+            // Check 3: API Class
+            if (typeof SupabaseAPI !== 'undefined') {
+                addResult('✅ API Class', 'SupabaseAPI class loaded', 'success');
+            } else {
+                addResult('❌ API Class', 'SupabaseAPI class not found', 'error');
+            }
+
+            // Check 4: Supabase Client
+            if (typeof supabaseClient !== 'undefined' || typeof window.supabaseClient !== 'undefined') {
+                addResult('✅ Supabase Client', 'Client initialized', 'success');
+            } else {
+                addResult('❌ Supabase Client', 'Client not initialized', 'error');
+            }
+
+            // Check 5: API Instance
+            if (typeof API !== 'undefined' || typeof window.API !== 'undefined') {
+                const api = window.API || API;
+                addResult('✅ API Instance', 'API object is ready!', 'success');
+                
+                // Show available methods
+                const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(api))
+                    .filter(m => m !== 'constructor');
+                addResult('📦 Available Methods', `<pre>${methods.join('\n')}</pre>`, 'info');
+            } else {
+                addResult('❌ API Instance', 'API object NOT FOUND - This is the problem!', 'error');
+            }
+
+            // Check 6: Test connection
+            setTimeout(async () => {
+                try {
+                    if (window.API) {
+                        const products = await window.API.getAllProducts();
+                        addResult('✅ Database Connection', `Connected! Found ${products.length} products`, 'success');
+                    }
+                } catch (error) {
+                    addResult('❌ Database Connection', error.message, 'error');
+                }
+            }, 1000);
+        }
+
+        // Auto-check on load
+        setTimeout(checkAll, 500);
+    </script>
+</body>
+</html>

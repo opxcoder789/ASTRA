@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: white;
+        }
+        .login-box {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #ff6b35;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #e05a2a;
+        }
+        .error {
+            color: #ef4444;
+            margin-top: 10px;
+        }
+        .success {
+            color: #10b981;
+            margin-top: 10px;
+        }
+        .info {
+            color: #999;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🔐 ASTRA Admin</h1>
+        <form id="loginForm">
+            <input type="password" id="passwordInput" placeholder="Enter Password" required autofocus>
+            <button type="submit">Login</button>
+            <p id="message"></p>
+            <p class="info">Password: <strong>1223</strong></p>
+        </form>
+    </div>
+
+    <script>
+        console.log('✅ Login test page loaded');
+        
+        const loginForm = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('passwordInput');
+        const message = document.getElementById('message');
+        const ADMIN_PASSWORD = '1223';
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = passwordInput.value;
+            
+            console.log('🔐 Login attempt with password:', password);
+            
+            if (password === ADMIN_PASSWORD) {
+                message.className = 'success';
+                message.textContent = '✅ Login successful! Redirecting...';
+                console.log('✅ Password correct!');
+                
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                message.className = 'error';
+                message.textContent = '❌ Invalid password. Try: 1223';
+                console.log('❌ Wrong password');
+                passwordInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
