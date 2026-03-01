@@ -1,0 +1,13 @@
+{
+  "name": "astra-sneaker-store",
+  "version": "1.0.0",
+  "description": "ASTRA - Born to Crush Land Sneaker Store",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["astra", "sneakers", "store", "ecommerce"],
+  "author": "ASTRA Team",
+  "license": "MIT"
+}

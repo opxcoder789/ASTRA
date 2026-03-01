@@ -1197,26 +1197,28 @@
     // ============================================================
     //  DATA
     // ============================================================
-    const BASE = 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/';
+    console.log('[v0] Store initializing...');
+    
+    // ASTRA Sneaker Products Database
     const products = [
-        { id:'1',  title:'4X Power Denim Pants',           price:2999, image:BASE+'A-2.jpg',       isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['XL','XXL'] },
-        { id:'2',  title:'Action Speaks Denim',             price:2999, image:BASE+'B-3.jpg',       isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['S'] },
-        { id:'3',  title:'Agni Denim Jacket',               price:2499, image:BASE+'C-4.jpg',       isSoldOut:true,  sizes:['S','M','L','XL','XXL'], soldOutSizes:['S','M','L','XL','XXL'] },
-        { id:'4',  title:'Ahankaar Hoodie',                 price:2799, image:BASE+'D-5.jpg',       isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['XXL'] },
-        { id:'5',  title:'Ahankaar T-shirt',                price:1999, image:BASE+'E-6.jpg',       isSoldOut:true,  sizes:['S','M','L','XL','XXL'], soldOutSizes:['S','M','L','XL','XXL'] },
-        { id:'6',  title:'Alien Love Shacket',              price:2199, image:BASE+'A456_1-7.jpg',  isSoldOut:true,  sizes:['S','M','L','XL','XXL'], soldOutSizes:['S','M','L','XL','XXL'] },
-        { id:'7',  title:'Alpha Human Tshirt',              price:1999, image:BASE+'A456_2-8.jpg',  isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['XL'] },
-        { id:'8',  title:'Alternate Reality Sweatshirt',    price:2799, image:BASE+'A456_3-9.jpg',  isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:[] },
-        { id:'9',  title:'Alternate Reality Tshirt',        price:1999, image:BASE+'A456_4-10.jpg', isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['S','XXL'] },
-        { id:'10', title:'Amoeba Fusion Pant',              price:2999, image:BASE+'A456_5-11.jpg', isSoldOut:true,  sizes:['S','M','L','XL','XXL'], soldOutSizes:['S','M','L','XL','XXL'] },
-        { id:'11', title:'Anyaay Hoodie',                   price:2999, image:BASE+'A372_1-12.jpg', isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['S'] },
-        { id:'12', title:'Ash Born T-shirt',                price:1599, image:BASE+'A372_2-13.jpg', isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['XXL'] },
-        { id:'13', title:'Baa Baa Black Sheep Denims',      price:2999, image:BASE+'A372_3-14.jpg', isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:[] },
-        { id:'14', title:'Baaj Brown Jacket',               price:3499, image:BASE+'A372_4-15.jpg', isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['XL','XXL'] },
-        { id:'15', title:'Beyond Eternity Shirt',           price:2199, image:BASE+'A372_5-16.jpg', isSoldOut:true,  sizes:['S','M','L','XL','XXL'], soldOutSizes:['S','M','L','XL','XXL'] },
-        { id:'16', title:'Beyond Miles',                    price:2999, image:BASE+'A51_1-17.jpg',  isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:['S'] },
-        { id:'17', title:'Black Ranbhoomi Shirt',           price:2199, image:BASE+'A51_2-18.jpg',  isSoldOut:false, sizes:['S','M','L','XL','XXL'], soldOutSizes:[] },
-        { id:'18', title:'Blessed Tote Bag',                price:999,  image:BASE+'A51_3-19.jpg',  isSoldOut:false, sizes:['One Size'],               soldOutSizes:[] }
+        { id:'1',  title:'ASTRA Air Max - Black',           price:8999, image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['11','12'] },
+        { id:'2',  title:'ASTRA Classic Sneaker',           price:6999, image:'https://images.unsplash.com/photo-1543163521-7a46d9b819d9?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6'] },
+        { id:'3',  title:'ASTRA Street Runner',            price:7499, image:'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
+        { id:'4',  title:'ASTRA Urban Kick',               price:7999, image:'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['12'] },
+        { id:'5',  title:'ASTRA Pro Performance',           price:9499, image:'https://images.unsplash.com/photo-1507222904046-f55a9d41a76c?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
+        { id:'6',  title:'ASTRA Elite Edition',             price:10999, image:'https://images.unsplash.com/photo-1544440571-3d034c3f7b4f?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
+        { id:'7',  title:'ASTRA Canvas Low',                price:5999, image:'https://images.unsplash.com/photo-1495706014551-30ecbc58ae39?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['9'] },
+        { id:'8',  title:'ASTRA Heritage High',             price:8499, image:'https://images.unsplash.com/photo-1554521723-9ab0037a2b7b?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] },
+        { id:'9',  title:'ASTRA Limited Collab',            price:11999, image:'https://images.unsplash.com/photo-1496072042892-b875e54e92e9?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
+        { id:'10', title:'ASTRA Comfort Max',               price:7499, image:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6'] },
+        { id:'11', title:'ASTRA Thunder Strike',            price:8299, image:'https://images.unsplash.com/photo-1538619666990-846dfb75c91d?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['8'] },
+        { id:'12', title:'ASTRA Velocity Plus',             price:7899, image:'https://images.unsplash.com/photo-1535381052091-f64e55c1ef0f?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['12'] },
+        { id:'13', title:'ASTRA Supreme Flow',              price:9199, image:'https://images.unsplash.com/photo-1527526516999-a7be17e7b0a8?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] },
+        { id:'14', title:'ASTRA Victory Lap',               price:8799, image:'https://images.unsplash.com/photo-1574523520811-cdc6102ec112?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['9','12'] },
+        { id:'15', title:'ASTRA Apex Runner',               price:7299, image:'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
+        { id:'16', title:'ASTRA Dynasty',                   price:9699, image:'https://images.unsplash.com/photo-1513161455079-7ef1a827f6d5?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['7'] },
+        { id:'17', title:'ASTRA Precision Edge',            price:7699, image:'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] },
+        { id:'18', title:'ASTRA Horizon',                   price:6499, image:'https://images.unsplash.com/photo-1485927714519-98346bd86e4c?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] }
     ];
 
     let filteredProducts = [...products];
@@ -1488,9 +1490,11 @@
     // ============================================================
     //  INIT
     // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        renderProducts();
-        updateItemCount();
+    console.log('[v0] Rendering', products.length, 'products...');
+    filterAndSort();
+    renderProducts();
+    updateItemCount();
+    console.log('[v0] Store loaded successfully');
 
         // --- Search ---
         const searchBtn    = document.getElementById('searchBtnStore');

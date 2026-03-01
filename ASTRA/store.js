@@ -1,24 +1,22 @@
-// Store Page JavaScript - Full Functionality
-const products = [
-    { id: '1', title: '4X Power Denim Pants', price: 2999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A-2.jpg', isSoldOut: false },
-    { id: '2', title: 'Action Speaks Denim', price: 2999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/B-3.jpg', isSoldOut: false },
-    { id: '3', title: 'Agni Denim Jacket', price: 2499, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/C-4.jpg', isSoldOut: true },
-    { id: '4', title: 'Ahankaar Hoodie', price: 2799, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/D-5.jpg', isSoldOut: false },
-    { id: '5', title: 'Ahankaar T-shirt', price: 1999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/E-6.jpg', isSoldOut: true },
-    { id: '6', title: 'Alien Love Shacket', price: 2199, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A456_1-7.jpg', isSoldOut: true },
-    { id: '7', title: 'Alpha Human Tshirt', price: 1999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A456_2-8.jpg', isSoldOut: false },
-    { id: '8', title: 'Alternate Reality Sweatshirt', price: 2799, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A456_3-9.jpg', isSoldOut: false },
-    { id: '9', title: 'Alternate Reality Tshirt', price: 1999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A456_4-10.jpg', isSoldOut: false },
-    { id: '10', title: 'Amoeba Fusion Pant', price: 2999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A456_5-11.jpg', isSoldOut: true },
-    { id: '11', title: 'Anyaay Hoodie', price: 2999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A372_1-12.jpg', isSoldOut: false },
-    { id: '12', title: 'Ash Born T-shirt', price: 1599, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A372_2-13.jpg', isSoldOut: false },
-    { id: '13', title: 'Baa Baa Black Sheep Denims', price: 2999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A372_3-14.jpg', isSoldOut: false },
-    { id: '14', title: 'Baaj Brown Jacket', price: 3499, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A372_4-15.jpg', isSoldOut: false },
-    { id: '15', title: 'Beyond Eternity Shirt', price: 2199, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A372_5-16.jpg', isSoldOut: true },
-    { id: '16', title: 'Beyond Miles', price: 2999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A51_1-17.jpg', isSoldOut: false },
-    { id: '17', title: 'Black Ranbhoomi Shirt', price: 2199, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A51_2-18.jpg', isSoldOut: false },
-    { id: '18', title: 'Blessed Tote Bag', price: 999, image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/73acfebc-7d37-4914-a7bb-31116e68dff3-owr-life/assets/images/A51_3-19.jpg', isSoldOut: false }
+// Store Page JavaScript - Full Functionality with Database Support
+console.log('[v0] Initializing store...');
+
+// Default products - will be overridden by database
+const defaultProducts = [
+    { id: '1', title: 'ASTRA Air Max - Black', price: 8999, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop', isSoldOut: false },
+    { id: '2', title: 'ASTRA Classic Sneaker', price: 6999, image: 'https://images.unsplash.com/photo-1543163521-f539c36a9c6b?w=400&h=400&fit=crop', isSoldOut: false },
+    { id: '3', title: 'ASTRA Street Runner', price: 7499, image: 'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=400&h=400&fit=crop', isSoldOut: false },
+    { id: '4', title: 'ASTRA Urban Kick', price: 7999, image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop', isSoldOut: false },
+    { id: '5', title: 'ASTRA Pro Performance', price: 9499, image: 'https://images.unsplash.com/photo-1507222904046-f55a9d41a76c?w=400&h=400&fit=crop', isSoldOut: true },
+    { id: '6', title: 'ASTRA Elite Edition', price: 10999, image: 'https://images.unsplash.com/photo-1544440571-3d034c3f7b4f?w=400&h=400&fit=crop', isSoldOut: false },
+    { id: '7', title: 'ASTRA Canvas Low', price: 5999, image: 'https://images.unsplash.com/photo-1495706014551-30ecbc58ae39?w=400&h=400&fit=crop', isSoldOut: false },
+    { id: '8', title: 'ASTRA Heritage High', price: 8499, image: 'https://images.unsplash.com/photo-1554521723-9ab0037a2b7b?w=400&h=400&fit=crop', isSoldOut: false },
+    { id: '9', title: 'ASTRA Limited Collab', price: 11999, image: 'https://images.unsplash.com/photo-1496072042892-b875e54e92e9?w=400&h=400&fit=crop', isSoldOut: true },
+    { id: '10', title: 'ASTRA Comfort Max', price: 7499, image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=400&fit=crop', isSoldOut: false },
 ];
+
+let products = [...defaultProducts];
+let filteredProducts = [...products];
 
 let filteredProducts = [...products];
 let currentSort = 'featured';

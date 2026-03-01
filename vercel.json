@@ -1,0 +1,16 @@
+{
+  "buildCommand": "echo 'Static site - no build required'",
+  "outputDirectory": ".",
+  "public": true,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    }
+  ]
+}
