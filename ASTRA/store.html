@@ -1195,31 +1195,9 @@
 
     <script>
     // ============================================================
-    //  DATA
+    //  SUPABASE INTEGRATION - Products loaded from API
     // ============================================================
-    console.log('[v0] Store initializing...');
-    
-    // ASTRA Sneaker Products Database
-    const products = [
-        { id:'1',  title:'ASTRA Air Max - Black',           price:8999, image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['11','12'] },
-        { id:'2',  title:'ASTRA Classic Sneaker',           price:6999, image:'https://images.unsplash.com/photo-1543163521-7a46d9b819d9?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6'] },
-        { id:'3',  title:'ASTRA Street Runner',            price:7499, image:'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
-        { id:'4',  title:'ASTRA Urban Kick',               price:7999, image:'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['12'] },
-        { id:'5',  title:'ASTRA Pro Performance',           price:9499, image:'https://images.unsplash.com/photo-1507222904046-f55a9d41a76c?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
-        { id:'6',  title:'ASTRA Elite Edition',             price:10999, image:'https://images.unsplash.com/photo-1544440571-3d034c3f7b4f?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
-        { id:'7',  title:'ASTRA Canvas Low',                price:5999, image:'https://images.unsplash.com/photo-1495706014551-30ecbc58ae39?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['9'] },
-        { id:'8',  title:'ASTRA Heritage High',             price:8499, image:'https://images.unsplash.com/photo-1554521723-9ab0037a2b7b?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] },
-        { id:'9',  title:'ASTRA Limited Collab',            price:11999, image:'https://images.unsplash.com/photo-1496072042892-b875e54e92e9?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
-        { id:'10', title:'ASTRA Comfort Max',               price:7499, image:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6'] },
-        { id:'11', title:'ASTRA Thunder Strike',            price:8299, image:'https://images.unsplash.com/photo-1538619666990-846dfb75c91d?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['8'] },
-        { id:'12', title:'ASTRA Velocity Plus',             price:7899, image:'https://images.unsplash.com/photo-1535381052091-f64e55c1ef0f?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['12'] },
-        { id:'13', title:'ASTRA Supreme Flow',              price:9199, image:'https://images.unsplash.com/photo-1527526516999-a7be17e7b0a8?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] },
-        { id:'14', title:'ASTRA Victory Lap',               price:8799, image:'https://images.unsplash.com/photo-1574523520811-cdc6102ec112?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['9','12'] },
-        { id:'15', title:'ASTRA Apex Runner',               price:7299, image:'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=400&h=400&fit=crop', isSoldOut:true,  sizes:['6','7','8','9','10','11','12'], soldOutSizes:['6','7','8','9','10','11','12'] },
-        { id:'16', title:'ASTRA Dynasty',                   price:9699, image:'https://images.unsplash.com/photo-1513161455079-7ef1a827f6d5?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:['7'] },
-        { id:'17', title:'ASTRA Precision Edge',            price:7699, image:'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] },
-        { id:'18', title:'ASTRA Horizon',                   price:6499, image:'https://images.unsplash.com/photo-1485927714519-98346bd86e4c?w=400&h=400&fit=crop', isSoldOut:false, sizes:['6','7','8','9','10','11','12'], soldOutSizes:[] }
-    ];
+    console.log('[v0] Store initializing with Supabase backend...');
 
     let filteredProducts = [...products];
     let currentSort = 'featured';
@@ -1654,5 +1632,7 @@
         });
     });
     </script>
+    <!-- Load external store.js with Supabase API integration -->
+    <script src="store.js"></script>
 </body>
 </html>
