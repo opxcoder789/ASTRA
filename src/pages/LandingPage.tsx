@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { supabase } from '../lib/supabase';
 import Navbar from '../components/Navbar';
+import ShaderBackground from '../components/ShaderBackground';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -212,18 +213,24 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, [heroSlides.length]);
 
-  // Handle active video playback
+  // Handle active video playback and ensure others are stopped
   useEffect(() => {
-    const video = videoRefs.current[currentSlide];
-    if (video) {
-      video.currentTime = 0; // Restart video when slide becomes active
-      if (isPlaying) {
-        video.play().catch(e => console.log("Autoplay prevented:", e));
+    videoRefs.current.forEach((vid, index) => {
+      if (!vid) return;
+      if (index === currentSlide) {
+        vid.currentTime = 0;
+        if (heroSlides[index]?.bg_type === 'video' && isPlaying) {
+          vid.play().catch((e) => console.log('Autoplay prevented:', e));
+        } else {
+          vid.pause();
+        }
+        vid.muted = isMuted;
       } else {
-        video.pause();
+        vid.pause();
+        vid.muted = true;
       }
-    }
-  }, [currentSlide, isPlaying]);
+    });
+  }, [currentSlide, isPlaying, isMuted, heroSlides]);
 
   const togglePlay = () => {
     const video = videoRefs.current[currentSlide];
@@ -437,12 +444,16 @@ export default function LandingPage() {
          </div>
       </section>
 
-      {/* Footer Visuals */}
+      {/* Footer Visuals with shader background */}
       <section className="relative bg-black py-32 flex flex-col items-center justify-center overflow-hidden">
-         <button className="bg-white text-black px-10 py-4 rounded-full font-bold text-sm tracking-widest hover:scale-105 transition-transform z-10" onClick={() => navigate('/store')}>
+         <ShaderBackground className="absolute inset-0 pointer-events-none" />
+         <button
+           className="bg-white text-black px-10 py-4 rounded-full font-bold text-sm tracking-widest hover:scale-105 transition-transform z-10"
+           onClick={() => navigate('/store')}
+         >
            GO TO ASTRA STORE
          </button>
-         <div className="absolute bottom-5 right-5 text-white/30 text-xs uppercase tracking-widest">
+         <div className="absolute bottom-5 right-5 text-white/40 text-xs uppercase tracking-widest z-10">
            - LOVE BY PRAKHAR DEV
          </div>
       </section>

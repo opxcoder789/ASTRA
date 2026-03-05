@@ -11,6 +11,14 @@ interface Product {
   in_stock: boolean;
   background_type: 'dark' | 'light';
   description?: string;
+  available_sizes?: string[];
+  total_stock?: number;
+  refund_policy?: string;
+  shipping_policy?: string;
+  pack_options?: any[];
+  shoe_models?: string[];
+  discount_percent?: number;
+  additional_images?: string[];
 }
 
 interface HeroSlide {
@@ -31,7 +39,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'all' | 'astra' | 'cartoon' | 'landing'>('all');
+  const [activeTab, setActiveTab] = useState<string>('all');
   const [landingContent, setLandingContent] = useState<any>(null);
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null);
@@ -45,8 +53,22 @@ export default function AdminPage() {
     category: 'astra',
     in_stock: true,
     background_type: 'dark',
-    description: ''
+    description: '',
+    available_sizes: [],
+    total_stock: 0,
+    refund_policy: '',
+    shipping_policy: '',
+    pack_options: [],
+    shoe_models: [],
+    discount_percent: 0
   });
+  const [priceInINR, setPriceInINR] = useState(0);
+  const [priceCurrency, setPriceCurrency] = useState<'usd' | 'inr'>('usd');
+  const [sizeInput, setSizeInput] = useState('');
+  const [shoeModelInput, setShoeModelInput] = useState('');
+  const [packInput, setPackInput] = useState({ name: '', description: '' });
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [productImages, setProductImages] = useState<string[]>([]);
 
   const [slideFormData, setSlideFormData] = useState<HeroSlide>({
     bg_url: '',
@@ -193,21 +215,77 @@ export default function AdminPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : 
-               name === 'price' ? parseFloat(value) : value
-    }));
+    
+    if (name === 'price') {
+      const numValue = parseFloat(value) || 0;
+      if (priceCurrency === 'inr') {
+        // Convert INR to USD for storage
+        const USD_TO_INR = 83;
+        setFormData(prev => ({ ...prev, price: numValue / USD_TO_INR }));
+        setPriceInINR(numValue);
+      } else {
+        setFormData(prev => ({ ...prev, price: numValue }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      }));
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
+    
+    if (productImages.length === 0) {
+      alert('Please add at least one product image');
+      return;
+    }
+    
+    // Remove fields that don't exist in the database yet
+    const dataToSubmit: any = {
+      name: formData.name,
+      price: formData.price,
+      image: productImages[0], // First image as main image
+      category: formData.category,
+      in_stock: formData.in_stock,
+      background_type: formData.background_type,
+      description: formData.description
+    };
+
+    // Add additional images if more than one
+    if (productImages.length > 1) {
+      dataToSubmit.additional_images = productImages.slice(1);
+    }
+
+    // Only add optional fields if they have values
+    if (formData.available_sizes && formData.available_sizes.length > 0) {
+      dataToSubmit.available_sizes = formData.available_sizes;
+    }
+    if (formData.total_stock) {
+      dataToSubmit.total_stock = formData.total_stock;
+    }
+    if (formData.refund_policy) {
+      dataToSubmit.refund_policy = formData.refund_policy;
+    }
+    if (formData.shipping_policy) {
+      dataToSubmit.shipping_policy = formData.shipping_policy;
+    }
+    if (formData.pack_options && formData.pack_options.length > 0) {
+      dataToSubmit.pack_options = formData.pack_options;
+    }
+    if (formData.shoe_models && formData.shoe_models.length > 0) {
+      dataToSubmit.shoe_models = formData.shoe_models;
+    }
+    if (formData.discount_percent) {
+      dataToSubmit.discount_percent = formData.discount_percent;
+    }
     
     if (editingProduct) {
       // Update
       const { error } = await supabase
         .from('products')
-        .update(formData)
+        .update(dataToSubmit)
         .eq('id', editingProduct.id);
 
       if (error) {
@@ -220,7 +298,7 @@ export default function AdminPage() {
       // Create
       const { error } = await supabase
         .from('products')
-        .insert([formData]);
+        .insert([dataToSubmit]);
 
       if (error) {
         alert('Error creating product: ' + error.message);
@@ -249,6 +327,17 @@ export default function AdminPage() {
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
     setFormData(product);
+    setPriceCurrency('usd');
+    setPriceInINR(0);
+    
+    // Load existing images
+    const images = [];
+    if (product.image) images.push(product.image);
+    if (product.additional_images) {
+      images.push(...product.additional_images);
+    }
+    setProductImages(images);
+    
     setIsModalOpen(true);
   };
 
@@ -261,25 +350,91 @@ export default function AdminPage() {
       category: 'astra',
       in_stock: true,
       background_type: 'dark',
-      description: ''
+      description: '',
+      available_sizes: [],
+      total_stock: 0,
+      refund_policy: '',
+      shipping_policy: '',
+      pack_options: [],
+      shoe_models: [],
+      discount_percent: 0
     });
+    setPriceCurrency('usd');
+    setPriceInINR(0);
+    setSizeInput('');
+    setShoeModelInput('');
+    setProductImages([]);
+    setImageUrlInput('');
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
+    setProductImages([]);
+    setImageUrlInput('');
   };
 
-  const filteredProducts = activeTab === 'all' 
-    ? products 
-    : products.filter(p => p.category === activeTab);
+  const addImageUrl = () => {
+    if (imageUrlInput.trim() && productImages.length < 15) {
+      setProductImages([...productImages, imageUrlInput.trim()]);
+      setImageUrlInput('');
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const remainingSlots = 15 - productImages.length;
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+    filesToProcess.forEach(file => {
+      if (file instanceof File) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            setProductImages(prev => [...prev, event.target!.result as string]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Reset the input
+    e.target.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    setProductImages(productImages.filter((_, i) => i !== index));
+  };
+
+  const categoryTabs = Array.from(new Set(products.map((p) => p.category))).sort(
+    (a: any, b: any) => String(a).localeCompare(String(b)),
+  );
+
+  const filteredProducts =
+    activeTab === 'all'
+      ? products
+      : activeTab === 'landing'
+      ? []
+      : products.filter((p) => p.category === activeTab);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8 font-sans">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Store Admin</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Store Admin</h1>
+            <div className="flex gap-4 mt-2">
+              <a href="/admin" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                Products
+              </a>
+              <a href="/admin/orders" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                Orders
+              </a>
+            </div>
+          </div>
           <button 
             onClick={openCreateModal}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
@@ -289,18 +444,22 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b border-gray-200 pb-1">
-          {['all', 'astra', 'cartoon', 'landing'].map((tab) => (
+        <div className="flex flex-wrap gap-4 mb-6 border-b border-gray-200 pb-1">
+          {['all', ...categoryTabs, 'landing'].map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab as any)}
+              onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 font-medium capitalize ${
-                activeTab === tab 
-                  ? 'text-blue-600 border-b-2 border-blue-600' 
+                activeTab === tab
+                  ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {tab === 'landing' ? 'Landing Page' : `${tab} Products`}
+              {tab === 'landing'
+                ? 'Landing Page'
+                : tab === 'all'
+                ? 'All Products'
+                : `${tab} Products`}
             </button>
           ))}
         </div>
@@ -519,7 +678,7 @@ export default function AdminPage() {
         {/* Product Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
                 <h2 className="text-xl font-bold">{editingProduct ? 'Edit Product' : 'New Product'}</h2>
                 <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
@@ -527,83 +686,174 @@ export default function AdminPage() {
                 </button>
               </div>
               
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                {/* Product Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
                   <input 
                     type="text" 
                     name="name"
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="Enter product name"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                {/* Price and Category Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-                    <input 
-                      type="number" 
-                      name="price"
-                      required
-                      step="0.01"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                    <div className="flex gap-2">
+                      <select
+                        value={priceCurrency}
+                        onChange={(e) => {
+                          const newCurrency = e.target.value as 'usd' | 'inr';
+                          setPriceCurrency(newCurrency);
+                          if (newCurrency === 'inr') {
+                            const USD_TO_INR = 83;
+                            setPriceInINR(Math.round((formData.price || 0) * USD_TO_INR));
+                          }
+                        }}
+                        className="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      >
+                        <option value="usd">USD</option>
+                        <option value="inr">INR</option>
+                      </select>
+                      <input 
+                        type="number" 
+                        name="price"
+                        required
+                        step={priceCurrency === 'inr' ? '1' : '0.01'}
+                        value={priceCurrency === 'inr' ? priceInINR : formData.price}
+                        onChange={handleInputChange}
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        placeholder={priceCurrency === 'inr' ? 'Enter price in INR' : 'Enter price in USD'}
+                      />
+                    </div>
+                    {priceCurrency === 'inr' && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        ≈ ${((priceInINR || 0) / 83).toFixed(2)} USD
+                      </p>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select 
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <input 
+                      type="text"
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    >
-                      <option value="astra">Astra</option>
-                      <option value="cartoon">Cartoon</option>
-                    </select>
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder="e.g. astra, cartoon, limited, kids"
+                    />
                   </div>
                 </div>
 
+                {/* Images Section */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                  <div className="flex gap-2">
-                    <input 
-                      type="url" 
-                      name="image"
-                      required
-                      value={formData.image}
-                      onChange={handleInputChange}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                      placeholder="https://..."
-                    />
-                    <div className="w-10 h-10 bg-gray-100 rounded border border-gray-200 flex items-center justify-center overflow-hidden">
-                      {formData.image ? (
-                        <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <ImageIcon size={16} className="text-gray-400" />
-                      )}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Images (Max 15)</label>
+                  
+                  {/* Image Upload Options */}
+                  <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {/* URL Input */}
+                      <div className="flex-1">
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Add Image URL</label>
+                        <div className="flex gap-2">
+                          <input 
+                            type="url" 
+                            value={imageUrlInput}
+                            onChange={(e) => setImageUrlInput(e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            placeholder="https://example.com/image.jpg"
+                          />
+                          <button 
+                            type="button"
+                            onClick={addImageUrl}
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+                          >
+                            Add URL
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* File Upload */}
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Upload Images</label>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                      </div>
                     </div>
                   </div>
+
+                  {/* Image Gallery */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {productImages.map((image, index) => (
+                      <div key={index} className="relative group">
+                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
+                          <img 
+                            src={image} 
+                            alt={`Product ${index + 1}`} 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDlWN0MxOSA1IDE3IDUgMTUgN1Y5QzE1IDExIDE3IDExIDE5IDExSDIxVjlaTTIxIDlWN0MxOSA1IDE3IDUgMTUgN1Y5QzE1IDExIDE3IDExIDE5IDExSDIxVjlaIiBzdHJva2U9IiM5Q0E3QjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+                            }}
+                          />
+                        </div>
+                        {index === 0 && (
+                          <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                            Main
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                    
+                    {/* Add More Button */}
+                    {productImages.length < 15 && (
+                      <div className="aspect-square bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
+                        <div className="text-center">
+                          <Plus size={24} className="text-gray-400 mx-auto mb-1" />
+                          <p className="text-xs text-gray-500">Add Image</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p className="text-xs text-gray-500 mt-2">
+                    First image will be used as the main product image. You can add up to 15 images.
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                {/* Background Type and Stock */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Background Type</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Background Type</label>
                     <select 
                       name="background_type"
                       value={formData.background_type}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     >
                       <option value="dark">Dark</option>
                       <option value="light">Light</option>
                     </select>
                   </div>
-                  <div className="flex items-center pt-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                  <div className="flex items-center">
+                    <label className="flex items-center gap-3 cursor-pointer">
                       <input 
                         type="checkbox" 
                         name="in_stock"
@@ -616,12 +866,166 @@ export default function AdminPage() {
                   </div>
                 </div>
 
+                {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
                   <textarea 
                     name="description"
-                    rows={3}
+                    rows={4}
                     value={formData.description || ''}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="Enter product description..."
+                  />
+                </div>
+
+                {/* Available Sizes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Available Sizes</label>
+                  <div className="flex gap-2 mb-2">
+                    <input 
+                      type="text" 
+                      value={sizeInput}
+                      onChange={(e) => setSizeInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (sizeInput.trim()) {
+                            setFormData(prev => ({
+                              ...prev,
+                              available_sizes: [...(prev.available_sizes || []), sizeInput.trim()]
+                            }));
+                            setSizeInput('');
+                          }
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder="e.g. 7, 8, 9, 10 (press Enter to add)"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if (sizeInput.trim()) {
+                          setFormData(prev => ({
+                            ...prev,
+                            available_sizes: [...(prev.available_sizes || []), sizeInput.trim()]
+                          }));
+                          setSizeInput('');
+                        }
+                      }}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(formData.available_sizes || []).map((size, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2"
+                      >
+                        {size}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData(prev => ({
+                              ...prev,
+                              available_sizes: (prev.available_sizes || []).filter((_, i) => i !== idx)
+                            }));
+                          }}
+                          className="hover:text-blue-900"
+                        >
+                          <X size={14} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shoe Models */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Shoe Models (Optional)</label>
+                  <div className="flex gap-2 mb-2">
+                    <input 
+                      type="text" 
+                      value={shoeModelInput}
+                      onChange={(e) => setShoeModelInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (shoeModelInput.trim()) {
+                            setFormData(prev => ({
+                              ...prev,
+                              shoe_models: [...(prev.shoe_models || []), shoeModelInput.trim()]
+                            }));
+                            setShoeModelInput('');
+                          }
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder="e.g. Air Force 1, Jordan 1 (press Enter to add)"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if (shoeModelInput.trim()) {
+                          setFormData(prev => ({
+                            ...prev,
+                            shoe_models: [...(prev.shoe_models || []), shoeModelInput.trim()]
+                          }));
+                          setShoeModelInput('');
+                        }
+                      }}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(formData.shoe_models || []).map((model, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm flex items-center gap-2"
+                      >
+                        {model}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData(prev => ({
+                              ...prev,
+                              shoe_models: (prev.shoe_models || []).filter((_, i) => i !== idx)
+                            }));
+                          }}
+                          className="hover:text-green-900"
+                        >
+                          <X size={14} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Total Stock */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Stock (Optional)</label>
+                  <input 
+                    type="number" 
+                    name="total_stock"
+                    value={formData.total_stock || 0}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+
+                {/* Discount Percent */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discount % (Optional)</label>
+                  <input 
+                    type="number" 
+                    name="discount_percent"
+                    min="0"
+                    max="100"
+                    value={formData.discount_percent || 0}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
