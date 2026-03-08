@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Check, X, Package, Truck, Eye } from 'lucide-react';
+import Loader from '../components/Loader';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -31,7 +32,7 @@ export default function AdminOrdersPage() {
   const updateOrderStatus = async (orderId: number, status: string) => {
     const { error } = await supabase
       .from('orders')
-      .update({ 
+      .update({
         status,
         updated_at: new Date().toISOString()
       })
@@ -54,7 +55,7 @@ export default function AdminOrdersPage() {
 
     const { error } = await supabase
       .from('orders')
-      .update({ 
+      .update({
         tracking_number: trackingNumber,
         status: 'shipped',
         updated_at: new Date().toISOString()
@@ -71,8 +72,8 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const filteredOrders = filterStatus === 'all' 
-    ? orders 
+  const filteredOrders = filterStatus === 'all'
+    ? orders
     : orders.filter(o => o.status === filterStatus);
 
   const getStatusColor = (status: string) => {
@@ -103,11 +104,10 @@ export default function AdminOrdersPage() {
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-4 py-2 rounded-lg font-medium capitalize transition-colors ${
-                  filterStatus === status
-                    ? 'bg-black text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium capitalize transition-colors ${filterStatus === status
+                  ? 'bg-black text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 {status}
               </button>
@@ -116,8 +116,8 @@ export default function AdminOrdersPage() {
         </div>
 
         {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+          <div className="flex justify-center py-20">
+            <Loader color="#000000" size="65px" />
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="bg-white rounded-xl p-12 text-center">
@@ -145,58 +145,100 @@ export default function AdminOrdersPage() {
                     <h4 className="font-semibold text-gray-700 mb-2">Customer Details</h4>
                     <p className="text-sm text-gray-600">Email: {order.user_email}</p>
                     <p className="text-sm text-gray-600">User ID: {order.user_id}</p>
+
+                    {/* Shipping Address Section */}
+                    {order.shipping_address && (
+                      <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <h5 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 italic">Delivery At:</h5>
+                        <p className="text-sm font-medium text-gray-800">{order.shipping_address.address_line1}</p>
+                        {order.shipping_address.address_line2 && <p className="text-sm text-gray-600">{order.shipping_address.address_line2}</p>}
+                        <p className="text-sm text-gray-600">{order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.postal_code}</p>
+                        <p className="text-sm text-gray-600">{order.shipping_address.country}</p>
+                        {order.shipping_address.phone && <p className="text-sm font-bold text-blue-600 mt-1">📞 {order.shipping_address.phone}</p>}
+                      </div>
+                    )}
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-gray-700 mb-2">Product Details</h4>
-                    <div className="flex gap-3">
+                    <div className="flex gap-4">
                       {order.product_image && (
-                        <img src={order.product_image} alt={order.product_name} className="w-16 h-16 object-cover rounded-lg" />
+                        <div className="relative group">
+                          <img src={order.product_image} alt={order.product_name} className="w-20 h-20 object-cover rounded-xl shadow-sm" />
+                          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                        </div>
                       )}
                       <div>
-                        <p className="font-medium text-gray-900">{order.product_name}</p>
-                        <p className="text-sm text-gray-600">Price: {formatPrice(order.price, order.currency)}</p>
-                        <p className="text-sm text-gray-600">Quantity: {order.quantity}</p>
+                        <p className="font-bold text-gray-900 text-lg leading-tight">{order.product_name}</p>
+                        <p className="text-sm text-blue-600 font-bold mt-1">{formatPrice(order.price, order.currency)}</p>
+                        <p className="text-xs text-gray-500 mt-1">Quantity: <span className="text-black font-bold">{order.quantity}</span></p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h4 className="font-semibold text-gray-700 mb-2">Order Specifications</h4>
-                  <div className="grid md:grid-cols-3 gap-4 text-sm">
-                    {order.selected_shoe_model && (
-                      <div>
-                        <span className="text-gray-500">Shoe Model:</span>
-                        <p className="font-medium">{order.selected_shoe_model}</p>
-                      </div>
-                    )}
-                    {order.selected_size && (
-                      <div>
-                        <span className="text-gray-500">Size:</span>
-                        <p className="font-medium">{order.selected_size}</p>
-                      </div>
-                    )}
-                    {order.selected_pack && (
-                      <div>
-                        <span className="text-gray-500">Pack:</span>
-                        <p className="font-medium">{order.selected_pack}</p>
-                      </div>
-                    )}
+                <div className="mt-6 flex flex-wrap gap-4 pt-4 border-t border-gray-100">
+                  <div className="flex-1 min-w-[200px]">
+                    <h4 className="font-semibold text-gray-700 mb-2">Order Specs</h4>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm bg-blue-50/50 p-4 rounded-xl border border-blue-100/50">
+                      {order.selected_shoe_model && (
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Model</span>
+                          <p className="font-bold text-gray-800">{order.selected_shoe_model}</p>
+                        </div>
+                      )}
+                      {order.selected_size && (
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Size</span>
+                          <p className="font-bold text-gray-800">{order.selected_size}</p>
+                        </div>
+                      )}
+                      {order.selected_pack && (
+                        <div className="col-span-2">
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Pack</span>
+                          <p className="font-bold text-gray-800">{order.selected_pack}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Personalization Section with Images */}
+                  <div className="flex-[2] min-w-[300px]">
+                    <h4 className="font-semibold text-gray-700 mb-2">Personalization Request</h4>
+                    <div className="bg-yellow-50/50 p-4 rounded-xl border border-yellow-100/50">
+                      {order.personalization_text ? (
+                        <p className="text-sm text-gray-800 mb-4 italic">"{order.personalization_text}"</p>
+                      ) : (
+                        <p className="text-sm text-gray-400 italic mb-4">No text request provided.</p>
+                      )}
+
+                      {order.personalization_images && order.personalization_images.length > 0 && (
+                        <div>
+                          <p className="text-[10px] text-gray-500 uppercase font-black mb-2">Reference Images:</p>
+                          <div className="flex gap-2">
+                            {order.personalization_images.map((img: string, idx: number) => (
+                              <a key={idx} href={img} target="_blank" rel="noopener noreferrer" className="relative group">
+                                <img
+                                  src={img}
+                                  alt={`Ref ${idx + 1}`}
+                                  className="w-16 h-16 object-cover rounded-lg border-2 border-white shadow-sm group-hover:scale-105 transition-transform"
+                                />
+                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center text-white text-[10px] font-bold">VIEW</div>
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {order.personalization_text && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <h4 className="font-semibold text-gray-700 mb-2">Personalization Request</h4>
-                    <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg">{order.personalization_text}</p>
-                  </div>
-                )}
 
                 {order.tracking_number && (
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <h4 className="font-semibold text-gray-700 mb-2">Tracking Information</h4>
-                    <p className="text-sm text-gray-700 font-mono bg-blue-50 p-3 rounded-lg">{order.tracking_number}</p>
+                    <p className="text-sm text-blue-700 font-mono bg-blue-50 p-3 rounded-lg border border-blue-100 flex items-center gap-2">
+                      <Truck size={14} /> {order.tracking_number}
+                    </p>
                   </div>
                 )}
 
@@ -207,7 +249,7 @@ export default function AdminOrdersPage() {
                   >
                     <Eye size={16} /> View Details
                   </button>
-                  
+
                   {order.status === 'pending' && (
                     <>
                       <button
@@ -272,30 +314,118 @@ export default function AdminOrdersPage() {
 
                 <div>
                   <h3 className="font-semibold mb-2">Customer Information</h3>
-                  <p className="text-sm text-gray-600">Email: {selectedOrder.user_email}</p>
-                  <p className="text-sm text-gray-600">User ID: {selectedOrder.user_id}</p>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-1">
+                    <p className="text-sm text-gray-700 font-medium">Email: <span className="text-gray-600 font-normal">{selectedOrder.user_email}</span></p>
+                    <p className="text-sm text-gray-700 font-medium">User ID: <span className="text-gray-600 font-normal font-mono text-xs">{selectedOrder.user_id}</span></p>
+                  </div>
                 </div>
+
+                {selectedOrder.shipping_address && (
+                  <div>
+                    <h3 className="font-semibold mb-2">Shipping Information (Full Detail)</h3>
+                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 space-y-2">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Address 1</span>
+                          <p className="text-sm font-bold text-gray-800">{selectedOrder.shipping_address.address_line1}</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Address 2</span>
+                          <p className="text-sm font-bold text-gray-800">{selectedOrder.shipping_address.address_line2 || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">City</span>
+                          <p className="text-sm font-bold text-gray-800">{selectedOrder.shipping_address.city}</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">State</span>
+                          <p className="text-sm font-bold text-gray-800">{selectedOrder.shipping_address.state}</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Postal Code</span>
+                          <p className="text-sm font-bold text-gray-800">{selectedOrder.shipping_address.postal_code}</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Country</span>
+                          <p className="text-sm font-bold text-gray-800">{selectedOrder.shipping_address.country}</p>
+                        </div>
+                      </div>
+                      {selectedOrder.shipping_address.phone && (
+                        <div className="mt-2 pt-2 border-t border-blue-100 flex items-center gap-2">
+                          <span className="text-[10px] text-gray-400 uppercase font-black">Phone:</span>
+                          <p className="text-sm font-black text-blue-600">📞 {selectedOrder.shipping_address.phone}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <h3 className="font-semibold mb-2">Product Information</h3>
-                  <p className="text-sm text-gray-600">Product: {selectedOrder.product_name}</p>
-                  <p className="text-sm text-gray-600">Price: {formatPrice(selectedOrder.price, selectedOrder.currency)}</p>
-                  <p className="text-sm text-gray-600">Quantity: {selectedOrder.quantity}</p>
+                  <div className="flex gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    {selectedOrder.product_image && (
+                      <img src={selectedOrder.product_image} alt={selectedOrder.product_name} className="w-20 h-20 object-cover rounded-xl shadow-sm" />
+                    )}
+                    <div className="space-y-1">
+                      <p className="font-bold text-gray-900">{selectedOrder.product_name}</p>
+                      <p className="text-sm text-blue-600 font-bold">{formatPrice(selectedOrder.price, selectedOrder.currency)}</p>
+                      <p className="text-xs text-gray-500">Unit Quantity: {selectedOrder.quantity}</p>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <h3 className="font-semibold mb-2">Specifications</h3>
-                  {selectedOrder.selected_shoe_model && <p className="text-sm text-gray-600">Shoe Model: {selectedOrder.selected_shoe_model}</p>}
-                  {selectedOrder.selected_size && <p className="text-sm text-gray-600">Size: {selectedOrder.selected_size}</p>}
-                  {selectedOrder.selected_pack && <p className="text-sm text-gray-600">Pack: {selectedOrder.selected_pack}</p>}
+                  <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    {selectedOrder.selected_shoe_model && (
+                      <div>
+                        <span className="text-[10px] text-gray-400 uppercase font-black">Shoe Model</span>
+                        <p className="text-sm font-bold text-gray-800">{selectedOrder.selected_shoe_model}</p>
+                      </div>
+                    )}
+                    {selectedOrder.selected_size && (
+                      <div>
+                        <span className="text-[10px] text-gray-400 uppercase font-black">Size</span>
+                        <p className="text-sm font-bold text-gray-800">{selectedOrder.selected_size}</p>
+                      </div>
+                    )}
+                    {selectedOrder.selected_pack && (
+                      <div className="col-span-2">
+                        <span className="text-[10px] text-gray-400 uppercase font-black">Pack Selection</span>
+                        <p className="text-sm font-bold text-gray-800">{selectedOrder.selected_pack}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {selectedOrder.personalization_text && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Personalization Request</h3>
-                    <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg">{selectedOrder.personalization_text}</p>
+                <div>
+                  <h3 className="font-semibold mb-2">Personalization Request</h3>
+                  <div className="space-y-4 bg-yellow-50/50 p-4 rounded-xl border border-yellow-100">
+                    <div className="p-3 bg-white/60 rounded-lg italic text-sm text-gray-700 border border-yellow-100/50">
+                      "{selectedOrder.personalization_text || 'No text instructions provided'}"
+                    </div>
+
+                    {selectedOrder.personalization_images && selectedOrder.personalization_images.length > 0 && (
+                      <div>
+                        <span className="text-[10px] text-gray-400 uppercase font-black block mb-2 tracking-widest">Customer Reference Images</span>
+                        <div className="flex flex-wrap gap-3">
+                          {selectedOrder.personalization_images.map((img: string, idx: number) => (
+                            <div key={idx} className="relative group">
+                              <a href={img} target="_blank" rel="noopener noreferrer">
+                                <img
+                                  src={img}
+                                  alt={`User Ref ${idx + 1}`}
+                                  className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-md hover:scale-105 transition-transform"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center text-white text-[10px] font-bold">VIEW FULL</div>
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
 
                 {selectedOrder.status === 'pending' && (
                   <div className="flex gap-3 pt-4">

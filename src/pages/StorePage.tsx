@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import Navbar from '../components/Navbar';
 import SearchModal from '../components/SearchModal';
+import Loader from '../components/Loader';
 
 export default function StorePage() {
   const navigate = useNavigate();
   const params = useParams();
   const activeCategory = params.category || 'selection';
-  
+
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -26,7 +27,7 @@ export default function StorePage() {
       const { data, error } = await supabase
         .from('products')
         .select('*');
-      
+
       if (error) {
         console.error('Error fetching products:', error);
       } else {
@@ -93,10 +94,10 @@ export default function StorePage() {
               className="flex items-center gap-2"
               onClick={() => navigate('/')}
             >
-              <img 
-                src="https://instant.pxcode.io/api/pages/4c054573-e508-43d9-83fe-51efb0632ead/images/05967a3b42804ffdca1a72f53c85b08ce07b4c2c.png" 
-                alt="Astra Logo" 
-                className="w-8 h-8" 
+              <img
+                src="https://instant.pxcode.io/api/pages/4c054573-e508-43d9-83fe-51efb0632ead/images/05967a3b42804ffdca1a72f53c85b08ce07b4c2c.png"
+                alt="Astra Logo"
+                className="w-8 h-8"
               />
               <span className="text-xs text-white/60 tracking-[0.25em] uppercase">
                 Category
@@ -160,14 +161,14 @@ export default function StorePage() {
   return (
     <div className="bg-black text-white min-h-screen font-sans overflow-x-hidden">
       {/* Fixed Header */}
-      <Navbar 
+      <Navbar
         onSearchClick={() => setSearchOpen(true)}
       />
 
       {/* Search Modal */}
-      <SearchModal 
-        isOpen={searchOpen} 
-        onClose={() => setSearchOpen(false)} 
+      <SearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
       />
 
       <main className="pt-20 w-full max-w-full">
@@ -202,13 +203,12 @@ export default function StorePage() {
                 </div>
                 <button
                   onClick={() => setFilterOpen(true)}
-                  className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
-                    filtersEnabled 
-                      ? 'bg-green-500 text-white hover:bg-green-600' 
-                      : 'bg-gray-600 text-white hover:bg-gray-700'
-                  }`}
+                  className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${filtersEnabled
+                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    : 'bg-gray-600 text-white hover:bg-gray-700'
+                    }`}
                 >
-                  <Filter size={14} className="sm:w-4 sm:h-4" /> 
+                  <Filter size={14} className="sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Filters</span>
                   <span className="sm:hidden">{filtersEnabled ? 'ON' : 'OFF'}</span>
                 </button>
@@ -220,8 +220,8 @@ export default function StorePage() {
         {/* Product Grid - Original Design */}
         <section className="py-10 pb-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
           {loading ? (
-            <div className="text-center py-20">
-              <div className="inline-block w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+            <div className="text-center py-20 flex justify-center">
+              <Loader color="#ffffff" size="65px" />
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-20">
@@ -258,7 +258,7 @@ export default function StorePage() {
                   </div>
 
                   {/* Image Container */}
-                  <div className="relative aspect-[4/5] bg-[#0d0d0d] mt-0 flex items-center justify-center overflow-hidden">
+                  <div className="relative aspect-[4/5] bg-neutral-900 flex items-center justify-center overflow-hidden">
                     {!product.inStock && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
                         <span className="text-white font-bold text-sm sm:text-xl uppercase border-2 border-white px-3 py-2 sm:px-4 sm:py-2 transform -rotate-12">
@@ -269,23 +269,23 @@ export default function StorePage() {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    
+
+                    {/* Gradient Overlay for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-60" />
+
                     {/* Price Overlay */}
-                    <div className="absolute bottom-16 sm:bottom-20 left-0 right-0 text-center pointer-events-none px-2">
-                      <div className="flex flex-col items-center gap-1">
-                        <p
-                          className="font-serif text-xl sm:text-3xl font-bold tracking-wide"
-                          style={{ color: product.backgroundType === 'dark' ? 'white' : 'black' }}
-                        >
-                          {formatPrice(product.price)}
-                        </p>
-                        <span className="inline-flex items-center gap-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-white/70">
-                          <span className="px-2 py-0.5 rounded-full bg-black/60 border border-white/20 capitalize">
+                    <div className="absolute bottom-16 sm:bottom-20 left-4 right-4 text-left pointer-events-none z-10">
+                      <div className="flex flex-col items-start gap-1">
+                        <span className="inline-flex items-center gap-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mb-1">
+                          <span className="px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 capitalize font-medium">
                             {product.category}
                           </span>
                         </span>
+                        <p className="font-oswald text-2xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-2xl">
+                          {formatPrice(product.price)}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -327,7 +327,7 @@ export default function StorePage() {
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-black">Filters</h2>
-                <button 
+                <button
                   onClick={() => setFilterOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
@@ -351,14 +351,12 @@ export default function StorePage() {
                         setSelectedCategories([]);
                       }
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      filtersEnabled ? 'bg-green-500' : 'bg-gray-300'
-                    }`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${filtersEnabled ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        filtersEnabled ? 'translate-x-6' : 'translate-x-1'
-                      }`}
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${filtersEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
                     />
                   </button>
                 </div>
@@ -380,11 +378,10 @@ export default function StorePage() {
                               setSelectedCategories([...selectedCategories, cat]);
                             }
                           }}
-                          className={`px-4 py-2 rounded-full text-sm font-medium capitalize transition-colors ${
-                            selectedCategories.includes(cat)
-                              ? 'bg-black text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
+                          className={`px-4 py-2 rounded-full text-sm font-medium capitalize transition-colors ${selectedCategories.includes(cat)
+                            ? 'bg-black text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
                         >
                           {cat}
                         </button>

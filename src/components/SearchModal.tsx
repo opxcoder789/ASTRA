@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, Package } from 'lucide-react';
+import Loader from '../components/Loader';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
 
@@ -130,7 +131,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               <div className="max-h-96 overflow-y-auto">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
-                    <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <Loader color="#000000" size="40px" />
                   </div>
                 ) : searchQuery.trim() === '' ? (
                   <div className="py-12 text-center">

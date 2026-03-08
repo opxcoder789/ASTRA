@@ -246,7 +246,6 @@ export default function ShaderBackground({ className = '' }: ShaderBackgroundPro
     window.addEventListener('pointermove', handlePointerMove);
 
     let startTime = performance.now();
-    let frameId: number;
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -264,8 +263,15 @@ export default function ShaderBackground({ className = '' }: ShaderBackgroundPro
       gl.uniform2f(resolutionLocation, width, height);
     };
 
+    let isVisible = false;
+    let frameId: number | null = null;
+
     const render = () => {
-      frameId = requestAnimationFrame(render);
+      if (!isVisible) {
+        frameId = null;
+        return; // Fully stop the loop — do NOT schedule next frame
+      }
+
       resize();
 
       const now = performance.now();
@@ -278,12 +284,26 @@ export default function ShaderBackground({ className = '' }: ShaderBackgroundPro
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+      frameId = requestAnimationFrame(render);
     };
 
-    render();
+    const observer = new IntersectionObserver((entries) => {
+      const wasVisible = isVisible;
+      isVisible = entries[0].isIntersecting;
+      // Only restart loop if transitioning from hidden to visible
+      if (isVisible && !wasVisible && frameId === null) {
+        frameId = requestAnimationFrame(render);
+      }
+    }, { threshold: 0 });
+
+    observer.observe(canvas);
+
+    // Don't auto-start — let IntersectionObserver trigger first frame
+    // This prevents blocking the main thread on initial page load
 
     return () => {
-      cancelAnimationFrame(frameId);
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      observer.disconnect();
       window.removeEventListener('pointermove', handlePointerMove);
     };
   }, []);

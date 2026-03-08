@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, User, CreditCard, Package } from 'lucide-react';
+import { ArrowLeft, MapPin, User, CreditCard, Package, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { useUser } from '@clerk/clerk-react';
 import { supabase } from '../lib/supabase';
 import Navbar from '../components/Navbar';
+import Loader from '../components/Loader';
 
 interface ShippingAddress {
   address_line1: string;
@@ -34,7 +35,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [currency, setCurrency] = useState<'usd' | 'inr'>('inr');
-  
+
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     address_line1: '',
     address_line2: '',
@@ -45,7 +46,9 @@ export default function CheckoutPage() {
     phone: ''
   });
 
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [showSavedAddresses, setShowSavedAddresses] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -72,28 +75,43 @@ export default function CheckoutPage() {
       const { data, error } = await supabase
         .from('user_addresses')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('is_default', true)
-        .single();
+        .eq('user_id', user.id);
 
       if (data && !error) {
-        setShippingAddress({
-          address_line1: data.address_line1,
-          address_line2: data.address_line2 || '',
-          city: data.city,
-          state: data.state,
-          postal_code: data.postal_code,
-          country: data.country,
-          phone: '' // Phone will be entered separately
-        });
+        setSavedAddresses(data);
+        const defaultAddr = data.find((a: any) => a.is_default);
+        if (defaultAddr) {
+          setShippingAddress({
+            address_line1: defaultAddr.address_line1,
+            address_line2: defaultAddr.address_line2 || '',
+            city: defaultAddr.city,
+            state: defaultAddr.state,
+            postal_code: defaultAddr.postal_code,
+            country: defaultAddr.country,
+            phone: '' // Phone still needs to be entered unless we also save it in address
+          });
+        }
       }
     } catch (error) {
-      console.log('No default address found');
+      console.log('Error loading addresses');
     }
   };
 
+  const selectSavedAddress = (addr: any) => {
+    setShippingAddress({
+      address_line1: addr.address_line1,
+      address_line2: addr.address_line2 || '',
+      city: addr.city,
+      state: addr.state,
+      postal_code: addr.postal_code,
+      country: addr.country,
+      phone: shippingAddress.phone // Keep the current phone or update if addr has one
+    });
+    setShowSavedAddresses(false);
+  };
+
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
+    const newErrors: { [key: string]: string } = {};
 
     if (!shippingAddress.address_line1.trim()) {
       newErrors.address_line1 = 'Address line 1 is required';
@@ -245,7 +263,7 @@ export default function CheckoutPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+        <Loader color="#ffffff" size="65px" />
       </div>
     );
   }
@@ -271,10 +289,45 @@ export default function CheckoutPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* Shipping Address */}
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <MapPin size={20} />
-                Shipping Address
-              </h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <MapPin size={20} />
+                  Shipping Address
+                </h2>
+                {savedAddresses.length > 0 && (
+                  <button
+                    onClick={() => setShowSavedAddresses(!showSavedAddresses)}
+                    className="text-xs bg-white text-black px-3 py-1.5 rounded-full font-bold hover:bg-gray-200 transition-colors flex items-center gap-1"
+                  >
+                    {showSavedAddresses ? 'Hide Saved' : 'Use Saved Address'}
+                    {showSavedAddresses ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
+                )}
+              </div>
+
+              {/* Saved Addresses List */}
+              {showSavedAddresses && savedAddresses.length > 0 && (
+                <div className="grid gap-3 mb-8">
+                  {savedAddresses.map((addr) => (
+                    <button
+                      key={addr.id}
+                      onClick={() => selectSavedAddress(addr)}
+                      className="text-left p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all flex justify-between items-center group"
+                    >
+                      <div>
+                        <p className="font-bold text-sm text-white">{addr.address_line1}</p>
+                        <p className="text-xs text-gray-400">
+                          {addr.city}, {addr.state} {addr.postal_code}
+                        </p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center group-hover:border-white/50">
+                        <Check size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </button>
+                  ))}
+                  <div className="border-b border-white/10 my-2" />
+                </div>
+              )}
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
@@ -285,9 +338,8 @@ export default function CheckoutPage() {
                     type="text"
                     value={shippingAddress.address_line1}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, address_line1: e.target.value })}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${
-                      errors.address_line1 ? 'border-red-500' : 'border-white/20'
-                    }`}
+                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${errors.address_line1 ? 'border-red-500' : 'border-white/20'
+                      }`}
                     placeholder="Street address, apartment, suite, etc."
                   />
                   {errors.address_line1 && <p className="text-red-400 text-sm mt-1">{errors.address_line1}</p>}
@@ -314,9 +366,8 @@ export default function CheckoutPage() {
                     type="text"
                     value={shippingAddress.city}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${
-                      errors.city ? 'border-red-500' : 'border-white/20'
-                    }`}
+                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${errors.city ? 'border-red-500' : 'border-white/20'
+                      }`}
                     placeholder="City"
                   />
                   {errors.city && <p className="text-red-400 text-sm mt-1">{errors.city}</p>}
@@ -330,9 +381,8 @@ export default function CheckoutPage() {
                     type="text"
                     value={shippingAddress.state}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${
-                      errors.state ? 'border-red-500' : 'border-white/20'
-                    }`}
+                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${errors.state ? 'border-red-500' : 'border-white/20'
+                      }`}
                     placeholder="State"
                   />
                   {errors.state && <p className="text-red-400 text-sm mt-1">{errors.state}</p>}
@@ -346,9 +396,8 @@ export default function CheckoutPage() {
                     type="text"
                     value={shippingAddress.postal_code}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, postal_code: e.target.value })}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${
-                      errors.postal_code ? 'border-red-500' : 'border-white/20'
-                    }`}
+                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${errors.postal_code ? 'border-red-500' : 'border-white/20'
+                      }`}
                     placeholder="Postal Code"
                   />
                   {errors.postal_code && <p className="text-red-400 text-sm mt-1">{errors.postal_code}</p>}
@@ -379,9 +428,8 @@ export default function CheckoutPage() {
                     type="tel"
                     value={shippingAddress.phone}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, phone: e.target.value })}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${
-                      errors.phone ? 'border-red-500' : 'border-white/20'
-                    }`}
+                    className={`w-full px-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 ${errors.phone ? 'border-red-500' : 'border-white/20'
+                      }`}
                     placeholder="Phone number for delivery updates"
                   />
                   {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}

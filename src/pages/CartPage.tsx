@@ -4,6 +4,7 @@ import { Trash2, Plus, Minus, Package, Truck, CheckCircle, Clock, ShoppingBag } 
 import { useUser } from '@clerk/clerk-react';
 import { supabase } from '../lib/supabase';
 import Navbar from '../components/Navbar';
+import Loader from '../components/Loader';
 
 interface CartItem {
   id: number;
@@ -19,6 +20,7 @@ interface CartItem {
     price: number;
     image: string;
     discount_percent: number;
+    in_stock: boolean;
   };
 }
 
@@ -45,6 +47,7 @@ export default function CartPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrency] = useState<'usd' | 'inr'>('inr');
+  const [removedItems, setRemovedItems] = useState<string[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -53,11 +56,31 @@ export default function CartPage() {
     }
     fetchCartItems();
     fetchOrders();
+
+    // Real-time subscription for cart updates
+    const subscription = supabase
+      .channel('cart_realtime')
+      .on('postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cart_items',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          fetchCartItems();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [user]);
 
   const fetchCartItems = async () => {
     if (!user) return;
-    
+
     const { data, error } = await supabase
       .from('cart_items')
       .select(`
@@ -67,7 +90,8 @@ export default function CartPage() {
           name,
           price,
           image,
-          discount_percent
+          discount_percent,
+          in_stock
         )
       `)
       .eq('user_id', user.id);
@@ -75,7 +99,27 @@ export default function CartPage() {
     if (error) {
       console.error('Error fetching cart:', error);
     } else {
-      setCartItems(data || []);
+      const items = data || [];
+
+      // Auto-remove out-of-stock items
+      const outOfStockItems = items.filter(item => item.products && !item.products.in_stock);
+      const inStockItems = items.filter(item => item.products && item.products.in_stock);
+
+      if (outOfStockItems.length > 0) {
+        // Remove from DB
+        const idsToRemove = outOfStockItems.map(item => item.id);
+        await supabase
+          .from('cart_items')
+          .delete()
+          .in('id', idsToRemove);
+
+        // Show notification
+        const removedNames = outOfStockItems.map(item => item.products.name);
+        setRemovedItems(removedNames);
+        setTimeout(() => setRemovedItems([]), 5000);
+      }
+
+      setCartItems(inStockItems);
     }
     setLoading(false);
   };
@@ -129,10 +173,10 @@ export default function CartPage() {
 
     try {
       setLoading(true);
-      
+
       // First, ensure user profile exists
       await ensureUserProfile();
-      
+
       const orderPromises = cartItems.map(async (item) => {
         const basePrice = parseFloat(item.products.price.toString());
         const discountPercent = item.products.discount_percent || 0;
@@ -274,7 +318,7 @@ export default function CartPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+        <Loader color="#ffffff" size="65px" />
       </div>
     );
   }
@@ -306,25 +350,36 @@ export default function CartPage() {
           </div>
         </div>
 
+        {/* Out of stock removal notification */}
+        {removedItems.length > 0 && (
+          <div className="mb-6 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex items-start gap-3">
+            <span className="text-yellow-500 text-xl">⚠️</span>
+            <div>
+              <p className="text-yellow-300 font-medium text-sm">Items removed from cart (out of stock)</p>
+              <p className="text-yellow-200/70 text-xs mt-1">
+                {removedItems.join(', ')} — {removedItems.length === 1 ? 'this item is' : 'these items are'} no longer available.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Tabs */}
         <div className="flex gap-4 mb-6 border-b border-white/10">
           <button
             onClick={() => setActiveTab('cart')}
-            className={`px-6 py-3 font-medium transition-colors ${
-              activeTab === 'cart'
-                ? 'text-white border-b-2 border-white'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
+            className={`px-6 py-3 font-medium transition-colors ${activeTab === 'cart'
+              ? 'text-white border-b-2 border-white'
+              : 'text-gray-400 hover:text-gray-300'
+              }`}
           >
             Cart ({cartItems.length})
           </button>
           <button
             onClick={() => setActiveTab('orders')}
-            className={`px-6 py-3 font-medium transition-colors ${
-              activeTab === 'orders'
-                ? 'text-white border-b-2 border-white'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
+            className={`px-6 py-3 font-medium transition-colors ${activeTab === 'orders'
+              ? 'text-white border-b-2 border-white'
+              : 'text-gray-400 hover:text-gray-300'
+              }`}
           >
             Orders ({orders.length})
           </button>
@@ -351,56 +406,64 @@ export default function CartPage() {
                   return (
                     <div
                       key={item.id}
-                      className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-colors"
+                      className="bg-white/5 rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/20 transition-all group relative"
                     >
-                      <div className="flex gap-6">
+                      {/* Delete button positioned for responsiveness */}
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors p-2 z-10"
+                        title="Remove from cart"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+
+                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                         <img
                           src={item.products.image}
                           alt={item.products.name}
-                          className="w-32 h-32 object-cover rounded-xl"
+                          className="w-full sm:w-32 h-48 sm:h-32 object-cover rounded-xl"
                         />
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold mb-2">{item.products.name}</h3>
-                          <div className="space-y-1 text-sm text-gray-400 mb-4">
+                        <div className="flex-1 pr-8 sm:pr-0">
+                          <h3 className="text-lg sm:text-xl font-bold mb-2 pr-4">{item.products.name}</h3>
+                          <div className="space-y-1 text-xs sm:text-sm text-gray-400 mb-4">
                             {item.selected_size && <p>Size: {item.selected_size}</p>}
                             {item.selected_shoe_model && <p>Model: {item.selected_shoe_model}</p>}
                             {item.selected_pack && <p>Pack: {item.selected_pack}</p>}
                             {item.personalization_text && (
-                              <p className="text-xs">Note: {item.personalization_text}</p>
+                              <p className="text-xs bg-white/5 p-2 rounded italic">Note: {item.personalization_text}</p>
                             )}
                           </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
+
+                          <div className="flex flex-wrap items-center justify-between gap-4 mt-auto">
+                            <div className="flex items-center gap-3 bg-white/5 rounded-full p-1 border border-white/10">
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20"
+                                className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                                disabled={item.quantity <= 1}
                               >
-                                <Minus size={16} />
+                                <Minus size={14} />
                               </button>
-                              <span className="w-12 text-center font-medium">{item.quantity}</span>
+                              <span className="w-8 text-center font-bold text-sm">{item.quantity}</span>
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20"
+                                className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-colors"
                               >
-                                <Plus size={16} />
+                                <Plus size={14} />
                               </button>
                             </div>
+
                             <div className="text-right">
-                              <p className="text-2xl font-bold">{formatPrice(discountedPrice * item.quantity)}</p>
+                              <p className="text-xl sm:text-2xl font-bold text-white leading-none">
+                                {formatPrice(discountedPrice * item.quantity)}
+                              </p>
                               {item.products.discount_percent > 0 && (
-                                <p className="text-sm text-gray-400 line-through">
+                                <p className="text-xs sm:text-sm text-gray-500 line-through mt-1">
                                   {formatPrice(item.products.price * item.quantity)}
                                 </p>
                               )}
                             </div>
                           </div>
                         </div>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          <Trash2 size={20} />
-                        </button>
                       </div>
                     </div>
                   );
