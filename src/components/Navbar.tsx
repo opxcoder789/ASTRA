@@ -146,7 +146,14 @@ export default memo(function Navbar({ isScrolled: externalIsScrolled, onSearchCl
 
           {/* Right Side Actions */}
           <div className={`flex items-center gap-4 transition-all duration-300 ${isScrolled ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}`}>
-            {/* Search Icon hidden - only shown on StorePage header */}
+            {/* Search Icon - Show on all pages */}
+            <button 
+              aria-label="Search" 
+              className="hover:opacity-70 transition-opacity" 
+              onClick={() => navigate('/store')}
+            >
+              <Search size={20} className="text-white" />
+            </button>
 
             {isSignedIn ? (
               <UserButton afterSignOutUrl="/" />

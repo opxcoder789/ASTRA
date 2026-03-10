@@ -36,6 +36,16 @@ body {
     }
 }
 
+/* Hide scrollbars everywhere */
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
 /* --- FOLD EFFECT SECTION --- */
 .fold-effect-section {
     position: relative;
@@ -209,7 +219,7 @@ img {
 
 /* Interactive elements */
 .interactive {
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.4s;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.4s ease-in-out;
     cursor: pointer;
 }
 
@@ -222,4 +232,14 @@ img {
     .interactive:hover {
         transform: scale(1.05);
     }
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Store page specific */
+body {
+    overflow: hidden;
 }
