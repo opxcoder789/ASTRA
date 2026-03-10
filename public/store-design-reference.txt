@@ -1,0 +1,32 @@
+Store Page Design Reference Implementation:
+
+Header:
+- Logo/Branding on left (ASTRA SNEAKERS)
+- Category filter tags (horizontal scroll on mobile)
+- Product grid showing 2 cols on mobile, 3 on tablet, 4 on desktop, 5 on xl
+- Each product card:
+  * Aspect ratio 3/4
+  * Image with gradient overlay
+  * Product name and price overlay
+  * Favorite/heart button (top right)
+  * Add to cart button (bottom right)
+  * Smooth hover effects with scale and shadow
+
+Navbar:
+- Search icon only on shop/category pages (NOT on landing)
+- Profile icon always visible
+- Hamburger menu (two horizontal lines) instead of image icon
+- Logo links back to home
+- Currency: INR only (no USD toggle visible)
+- All elements with smooth hover transitions
+
+Features Implemented:
+✓ Responsive grid layout (2-5 columns)
+✓ Currency set to INR by default
+✓ Product cards with hover effects
+✓ Search icon only on category pages
+✓ Hamburger menu (2 lines) design
+✓ Profile icon in header
+✓ Price range filters (1000-200000 INR)
+✓ Category filtering
+✓ Beautiful card animations

@@ -146,11 +146,7 @@ export default memo(function Navbar({ isScrolled: externalIsScrolled, onSearchCl
 
           {/* Right Side Actions */}
           <div className={`flex items-center gap-4 transition-all duration-300 ${isScrolled ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}`}>
-            {onSearchClick && (
-              <button aria-label="Search Store" className="hover:opacity-70 transition-opacity" onClick={(e) => { e.stopPropagation(); onSearchClick(); }}>
-                <Search size={20} className="text-white" />
-              </button>
-            )}
+            {/* Search Icon hidden - only shown on StorePage header */}
 
             {isSignedIn ? (
               <UserButton afterSignOutUrl="/" />
@@ -164,8 +160,15 @@ export default memo(function Navbar({ isScrolled: externalIsScrolled, onSearchCl
               </button>
             )}
 
-            <button aria-label={menuActive ? "Close Menu" : "Open Menu"} aria-expanded={menuActive} className="cursor-pointer hover:scale-110 transition-transform cursor-pointer" onClick={(e) => { e.stopPropagation(); toggleMenu(); }}>
-              <img src="https://instant.pxcode.io/api/pages/4c054573-e508-43d9-83fe-51efb0632ead/images/106_388.svg" alt="Menu" className="w-[24px] h-[32px] md:w-[30px] md:h-[40px]" width="30" height="40" />
+            {/* Hamburger Menu - Two lines */}
+            <button 
+              aria-label={menuActive ? "Close Menu" : "Open Menu"} 
+              aria-expanded={menuActive} 
+              className="cursor-pointer hover:opacity-70 transition-opacity flex flex-col gap-1.5 p-2" 
+              onClick={(e) => { e.stopPropagation(); toggleMenu(); }}
+            >
+              <span className="block w-5 h-0.5 bg-white transition-transform duration-300"></span>
+              <span className="block w-5 h-0.5 bg-white transition-transform duration-300"></span>
             </button>
           </div>
         </div>

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Search, Menu, X, Filter } from 'lucide-react';
+import { Search, Menu, X, Filter, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
-import Navbar from '../components/Navbar';
 import SearchModal from '../components/SearchModal';
 import Loader from '../components/Loader';
 
@@ -17,8 +16,8 @@ export default function StorePage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filtersEnabled, setFiltersEnabled] = useState(false);
-  const [currency, setCurrency] = useState<'usd' | 'inr'>('usd');
-  const [priceRange, setPriceRange] = useState([100, 2000]);
+  const [currency, setCurrency] = useState<'usd' | 'inr'>('inr');
+  const [priceRange, setPriceRange] = useState([1000, 200000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   // Fetch Products
@@ -88,25 +87,41 @@ export default function StorePage() {
   if (activeCategory === 'selection') {
     return (
       <div className="bg-black text-white min-h-screen font-sans flex flex-col">
-        <header className="flex items-center justify-between px-6 py-5 border-b border-white/10 sticky top-0 bg-black z-50">
-          <div className="flex items-center gap-3">
+        <header className="fixed top-0 left-0 w-full z-50 bg-black border-b border-white/10">
+          <div className="px-4 md:px-8 py-4 flex justify-between items-center">
             <button
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hover:opacity-70 transition-opacity"
               onClick={() => navigate('/')}
             >
               <img
-                src="https://instant.pxcode.io/api/pages/4c054573-e508-43d9-83fe-51efb0632ead/images/05967a3b42804ffdca1a72f53c85b08ce07b4c2c.png"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-XbXlzUhbtHSi6xydN0hWJ0JZLztlXr.png"
                 alt="Astra Logo"
-                className="w-8 h-8"
+                className="h-6 w-auto"
               />
-              <span className="text-xs text-white/60 tracking-[0.25em] uppercase">
-                Category
-              </span>
             </button>
+            
+            {/* Right Side - Profile icon and Hamburger */}
+            <div className="flex items-center gap-3 md:gap-5">
+              <button
+                aria-label="Go to profile"
+                className="text-white hover:opacity-70 transition-opacity p-2"
+                onClick={() => navigate('/profile')}
+              >
+                <User size={20} />
+              </button>
+              
+              <button
+                aria-label="Open menu"
+                className="text-white hover:opacity-70 transition-opacity p-2 flex flex-col gap-1.5"
+              >
+                <span className="block w-6 h-0.5 bg-white transition-transform"></span>
+                <span className="block w-6 h-0.5 bg-white transition-transform"></span>
+              </button>
+            </div>
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col items-center justify-center px-6 py-10">
+        <main className="flex-1 flex flex-col items-center justify-center px-6 py-10 mt-20">
           <div className="max-w-md w-full">
             <h1 className="text-3xl font-semibold mb-6 tracking-tight">
               Select Category
@@ -160,10 +175,54 @@ export default function StorePage() {
 
   return (
     <div className="bg-black text-white min-h-screen font-sans overflow-x-hidden">
-      {/* Fixed Header */}
-      <Navbar
-        onSearchClick={() => setSearchOpen(true)}
-      />
+      {/* Fixed Header - Updated with hamburger menu */}
+      <div className="fixed top-0 left-0 w-full z-50 bg-black border-b border-white/10">
+        <div className="px-4 md:px-8 py-4 flex justify-between items-center">
+          {/* Logo and Title */}
+          <button
+            className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+            onClick={() => navigate('/')}
+          >
+            <img
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-XbXlzUhbtHSi6xydN0hWJ0JZLztlXr.png"
+              alt="Astra Logo"
+              className="h-6 w-auto"
+            />
+          </button>
+          
+          {/* Right Side - Search icon (only on shop/category), Profile icon, and Hamburger */}
+          <div className="flex items-center gap-3 md:gap-5">
+            {/* Search Icon - Only on category/shop pages */}
+            {(activeCategory && activeCategory !== 'selection') && (
+              <button
+                aria-label="Search products"
+                className="text-white hover:opacity-70 transition-opacity p-2"
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search size={20} />
+              </button>
+            )}
+            
+            {/* Profile Icon */}
+            <button
+              aria-label="Go to profile"
+              className="text-white hover:opacity-70 transition-opacity p-2"
+              onClick={() => navigate('/profile')}
+            >
+              <User size={20} />
+            </button>
+            
+            {/* Hamburger Menu - Two lines */}
+            <button
+              aria-label="Open menu"
+              className="text-white hover:opacity-70 transition-opacity p-2 flex flex-col gap-1.5"
+            >
+              <span className="block w-6 h-0.5 bg-white transition-transform"></span>
+              <span className="block w-6 h-0.5 bg-white transition-transform"></span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Search Modal */}
       <SearchModal
@@ -171,7 +230,7 @@ export default function StorePage() {
         onClose={() => setSearchOpen(false)}
       />
 
-      <main className="pt-20 w-full max-w-full">
+      <main className="pt-24 md:pt-20 w-full max-w-full">
         {/* Store Header - Clean and Fixed */}
         <section className="bg-black border-b border-white/10 py-6 sticky top-[72px] z-40">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -187,7 +246,8 @@ export default function StorePage() {
                 </p>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                <div className="flex items-center gap-1 text-xs border border-white/15 rounded-full px-1 py-0.5 bg-white/5">
+                {/* Currency Selector - Hidden, INR only */}
+                <div className="hidden text-xs border border-white/15 rounded-full px-1 py-0.5 bg-white/5">
                   <button
                     className={`px-2 sm:px-3 py-1 rounded-full transition-colors text-xs ${currency === 'usd' ? 'bg-white text-black' : 'text-gray-300'}`}
                     onClick={() => setCurrency('usd')}
@@ -228,11 +288,11 @@ export default function StorePage() {
               <p className="text-gray-400">No products found</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-black border border-white/10 rounded-3xl overflow-hidden group cursor-pointer relative hover:border-white/30 transition-all max-w-full"
+                  className="card-hover aspect-[3/4] rounded-2xl relative overflow-hidden bg-[#1c1c1e] border border-white/5 group"
                   onClick={() =>
                     navigate(
                       `/store/category/${encodeURIComponent(String(product.category))}/${encodeURIComponent(
@@ -241,27 +301,11 @@ export default function StorePage() {
                     )
                   }
                 >
-                  {/* Card Header with Logo */}
-                  <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 flex justify-center items-center z-10">
-                    <img
-                      src="https://instant.pxcode.io/api/pages/4c054573-e508-43d9-83fe-51efb0632ead/images/05967a3b42804ffdca1a72f53c85b08ce07b4c2c.png"
-                      alt="Logo"
-                      className="w-6 h-4 sm:w-8 sm:h-6 object-contain"
-                    />
-                  </div>
-
-                  {/* Title */}
-                  <div className="absolute top-10 sm:top-14 left-0 right-0 text-center z-10">
-                    <h3 className="text-blue-500 font-black text-sm sm:text-xl tracking-widest uppercase italic drop-shadow-md">
-                      ASTRA STORE
-                    </h3>
-                  </div>
-
                   {/* Image Container */}
-                  <div className="relative aspect-[4/5] bg-neutral-900 flex items-center justify-center overflow-hidden">
+                  <div className="relative w-full h-full bg-neutral-900 flex items-center justify-center overflow-hidden">
                     {!product.inStock && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
-                        <span className="text-white font-bold text-sm sm:text-xl uppercase border-2 border-white px-3 py-2 sm:px-4 sm:py-2 transform -rotate-12">
+                        <span className="text-white font-bold text-xs sm:text-sm uppercase border border-white px-2 py-1 transform -rotate-12">
                           Out of Stock
                         </span>
                       </div>
@@ -269,35 +313,30 @@ export default function StorePage() {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
 
-                    {/* Gradient Overlay for better text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-60" />
+                    {/* Gradient Overlay */}
+                    <div className="absolute bottom-0 w-full h-[60%] bg-gradient-to-t from-black via-black/80 to-transparent"></div>
 
-                    {/* Price Overlay */}
-                    <div className="absolute bottom-16 sm:bottom-20 left-4 right-4 text-left pointer-events-none z-10">
-                      <div className="flex flex-col items-start gap-1">
-                        <span className="inline-flex items-center gap-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mb-1">
-                          <span className="px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 capitalize font-medium">
-                            {product.category}
-                          </span>
-                        </span>
-                        <p className="font-oswald text-2xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-2xl">
-                          {formatPrice(product.price)}
-                        </p>
+                    {/* Product Info Overlay */}
+                    <div className="absolute bottom-4 left-4 text-white pr-8 z-10">
+                      <div className="text-[13px] md:text-[15px] font-medium leading-tight text-balance">
+                        {product.name}
+                      </div>
+                      <div className="text-[13px] md:text-[15px] font-bold mt-1.5 text-gray-300">
+                        {formatPrice(product.price)}
                       </div>
                     </div>
-                  </div>
 
-                  {/* Bottom Action Bar */}
-                  <div className="bg-[#ffd54a] p-3 sm:p-4 flex flex-col items-center justify-center gap-2 sm:gap-3 absolute bottom-0 left-0 right-0 rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
-                    <p className="text-black text-[9px] sm:text-[10px] font-bold text-center uppercase leading-tight max-w-[200px] sm:max-w-[220px] line-clamp-2">
-                      {product.description ||
-                        'Easy customization personalization add on customize this shoes flexible'}
-                    </p>
-                    <button className="bg-[#0099ff] text-white text-xs font-bold uppercase px-4 py-2 sm:px-6 sm:py-2 rounded-full shadow-md hover:bg-[#0077cc] transition-colors">
-                      buy now
+                    {/* Favorite Button */}
+                    <button className="absolute top-3 right-3 w-8 md:w-9 h-8 md:h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-black/60 transition-colors z-10">
+                      <svg width="14" height="12" viewBox="0 0 11 9" fill="none"><path d="M1.253 4.958L4.729 8.224a.276.276 0 00.392 0L8.802 4.958c.978-.919 1.097-2.431.275-3.491L8.922 1.268C7.938-.001 5.963.212 5.271 1.661a.278.278 0 01-.487 0C4.093.212 2.118-.001 1.134 1.268l-.155.199c-.823 1.06-.704 2.572.274 3.491z" stroke="#fff" strokeWidth="1"/></svg>
+                    </button>
+
+                    {/* Add to Cart Button */}
+                    <button className="absolute bottom-4 right-4 w-8 md:w-9 h-8 md:h-9 rounded-full bg-white flex items-center justify-center group-hover:bg-gray-200 transition-colors z-10 text-black">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
                   </div>
                 </div>
@@ -347,7 +386,7 @@ export default function StorePage() {
                       setFiltersEnabled(!filtersEnabled);
                       if (!filtersEnabled) {
                         // Reset filters when enabling
-                        setPriceRange([100, 2000]);
+                        setPriceRange([1000, 200000]);
                         setSelectedCategories([]);
                       }
                     }}
@@ -404,8 +443,8 @@ export default function StorePage() {
                         <label className="text-xs text-gray-500 mb-1 block">Minimum Price</label>
                         <input
                           type="range"
-                          min="100"
-                          max="2000"
+                          min="1000"
+                          max="200000"
                           value={priceRange[0]}
                           onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
                           className="w-full accent-black"
@@ -415,8 +454,8 @@ export default function StorePage() {
                         <label className="text-xs text-gray-500 mb-1 block">Maximum Price</label>
                         <input
                           type="range"
-                          min="100"
-                          max="2000"
+                          min="1000"
+                          max="200000"
                           value={priceRange[1]}
                           onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                           className="w-full accent-black"
@@ -430,7 +469,7 @@ export default function StorePage() {
               <div className="flex gap-3 mt-8">
                 <button
                   onClick={() => {
-                    setPriceRange([100, 2000]);
+                    setPriceRange([1000, 200000]);
                     setSelectedCategories([]);
                     setFiltersEnabled(false);
                   }}

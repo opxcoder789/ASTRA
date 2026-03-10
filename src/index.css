@@ -192,3 +192,34 @@ button:focus-visible {
 img {
     loading: lazy;
 }
+
+/* Card hover effects for store products */
+.card-hover {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s;
+    cursor: pointer;
+}
+
+@media (hover: hover) {
+    .card-hover:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+    }
+}
+
+/* Interactive elements */
+.interactive {
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.4s;
+    cursor: pointer;
+}
+
+.interactive:active {
+    transform: scale(0.92);
+    opacity: 0.8;
+}
+
+@media (hover: hover) {
+    .interactive:hover {
+        transform: scale(1.05);
+    }
+}
