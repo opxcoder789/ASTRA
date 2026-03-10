@@ -42,8 +42,8 @@ const FeaturedCarousel = memo(function FeaturedCarousel({ images, btnText }: { i
   }, []);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-5">
-      <div className="relative overflow-hidden rounded-3xl aspect-[3/4] md:aspect-[21/9] group cursor-pointer" onClick={() => navigate('/store')}>
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-[3/4] sm:aspect-[16/9] md:aspect-[21/9] group cursor-pointer" onClick={() => navigate('/store')}>
         <div
           className="flex h-full"
           style={{ transform: `translateX(-${activeIndex * 100}%)`, transition: 'transform 700ms cubic-bezier(0.25,1,0.5,1)', willChange: 'transform' }}
@@ -58,12 +58,12 @@ const FeaturedCarousel = memo(function FeaturedCarousel({ images, btnText }: { i
                 width="1200"
                 height="800"
               />
-              <div className="absolute bottom-0 inset-x-0 p-8 md:p-12 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
-                <div>
-                  <h3 className="text-4xl md:text-6xl font-bold mb-2">{item.name}</h3>
-                  <p className="text-white/80 text-lg">Experience the next level of comfort.</p>
+              <div className="absolute bottom-0 inset-x-0 p-6 sm:p-8 md:p-12 lg:p-16 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-8">
+                <div className="flex-1">
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-3 leading-tight text-balance">{item.name}</h3>
+                  <p className="text-white/80 text-sm sm:text-base md:text-lg leading-relaxed">Experience the next level of comfort.</p>
                 </div>
-                <button className="bg-white/90 backdrop-blur-sm text-black text-xs px-6 py-3 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-lg">
+                <button className="bg-white/90 backdrop-blur-md text-black text-xs sm:text-sm px-6 sm:px-7 md:px-8 py-2.5 sm:py-3 md:py-3 rounded-full font-bold uppercase tracking-widest hover:bg-white hover:shadow-xl transition-all duration-300 hover:scale-105 shadow-lg flex-shrink-0 whitespace-nowrap">
                   {btnText || 'Buy Now'}
                 </button>
               </div>
@@ -73,11 +73,11 @@ const FeaturedCarousel = memo(function FeaturedCarousel({ images, btnText }: { i
       </div>
 
       {/* Dots */}
-      <div className="flex justify-center gap-3 mt-8">
+      <div className="flex justify-center gap-2 sm:gap-3 mt-6 sm:mt-8">
         {FEATURED_ITEMS.map((_, i) => (
           <button
             key={i}
-            className={`h-2 rounded-full transition-all duration-300 ${activeIndex === i ? 'bg-white w-8' : 'bg-white/30 w-2 hover:bg-white/50'}`}
+            className={`h-2 rounded-full transition-all duration-300 ${activeIndex === i ? 'bg-white w-6 sm:w-8' : 'bg-white/30 w-2 hover:bg-white/50'}`}
             onClick={() => setActiveIndex(i)}
             aria-label={`Go to slide ${i + 1}`}
           />
@@ -91,8 +91,8 @@ const FeaturedCarousel = memo(function FeaturedCarousel({ images, btnText }: { i
 const PromoSection = memo(function PromoSection({ content, navigate }: { content: any, navigate: any }) {
   return (
     <section className="bg-[#f5f5f7] py-0" style={{ contain: 'content' }}>
-      <div className="grid md:grid-cols-2">
-        <div className="promo-card bg-black text-white min-h-[600px] flex flex-col items-center justify-center p-10 text-center relative overflow-hidden group">
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="promo-card bg-black text-white min-h-[500px] sm:min-h-[600px] md:min-h-[700px] flex flex-col items-center justify-center p-6 sm:p-8 md:p-10 lg:p-12 text-center relative overflow-hidden group">
           <div className="absolute inset-0 z-0">
             <OptimizedImage
               src={content?.feature_bottom_img1 || "https://picsum.photos/seed/storm/800/800"}
@@ -104,18 +104,18 @@ const PromoSection = memo(function PromoSection({ content, navigate }: { content
             />
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500" />
           </div>
-          <div className="relative z-10 flex flex-col items-center">
-            <h2 className="text-5xl md:text-6xl font-bold mb-4 tracking-tighter uppercase drop-shadow-xl">STORM RUNNER</h2>
-            <p className="text-white/90 text-lg max-w-md mb-8 drop-shadow-md font-medium">Built for the streets. Inspired by champions who never stop.</p>
+          <div className="relative z-10 flex flex-col items-center gap-4 sm:gap-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter uppercase drop-shadow-xl leading-tight text-balance">STORM RUNNER</h2>
+            <p className="text-white/90 text-sm sm:text-base md:text-lg max-w-md drop-shadow-md font-medium leading-relaxed">Built for the streets. Inspired by champions who never stop.</p>
             <button
-              className="bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-gray-200 transition-colors uppercase tracking-widest"
+              className="bg-white text-black px-6 sm:px-7 md:px-8 py-2.5 sm:py-3 md:py-3 rounded-full font-bold hover:bg-gray-100 hover:shadow-lg transition-all duration-300 uppercase tracking-widest text-xs sm:text-sm md:text-base hover:scale-105"
               onClick={() => navigate(content?.promo_btn1_link || '/store')}
             >
               {content?.promo_btn1_text || 'Shop'}
             </button>
           </div>
         </div>
-        <div className="promo-card bg-[#f5f5f7] text-black min-h-[600px] flex flex-col items-center justify-center p-10 text-center relative overflow-hidden group">
+        <div className="promo-card bg-[#f5f5f7] text-black min-h-[500px] sm:min-h-[600px] md:min-h-[700px] flex flex-col items-center justify-center p-6 sm:p-8 md:p-10 lg:p-12 text-center relative overflow-hidden group">
           <div className="absolute inset-0 z-0">
             <OptimizedImage
               src={content?.feature_bottom_img2 || "https://picsum.photos/seed/artwalk/800/800"}
@@ -127,11 +127,11 @@ const PromoSection = memo(function PromoSection({ content, navigate }: { content
             />
             <div className="absolute inset-0 bg-white/20 group-hover:bg-white/10 transition-colors duration-500" />
           </div>
-          <div className="relative z-10 flex flex-col items-center">
-            <h2 className="text-5xl md:text-6xl font-bold mb-4 tracking-tighter uppercase drop-shadow-xl text-black">Astra Art-Walk</h2>
-            <p className="text-black/80 text-lg max-w-md mb-8 drop-shadow-sm font-medium">The world's most stylish everyday performance sneaker.</p>
+          <div className="relative z-10 flex flex-col items-center gap-4 sm:gap-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter uppercase drop-shadow-xl text-black leading-tight text-balance">Astra Art-Walk</h2>
+            <p className="text-black/80 text-sm sm:text-base md:text-lg max-w-md drop-shadow-sm font-medium leading-relaxed">The world's most stylish everyday performance sneaker.</p>
             <button
-              className="bg-black text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition-colors uppercase tracking-widest"
+              className="bg-black text-white px-6 sm:px-7 md:px-8 py-2.5 sm:py-3 md:py-3 rounded-full font-bold hover:bg-gray-900 hover:shadow-lg transition-all duration-300 uppercase tracking-widest text-xs sm:text-sm md:text-base hover:scale-105"
               onClick={() => navigate(content?.promo_btn2_link || '/store')}
             >
               {content?.promo_btn2_text || 'Buy'}
@@ -387,19 +387,19 @@ export default function LandingPage() {
             </div>
 
             {/* Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-6 md:px-20 max-w-7xl mx-auto text-center">
-              <div className="max-w-5xl animate-fade-in-up flex flex-col items-center">
-                <h1 className="font-oswald text-5xl md:text-7xl lg:text-8xl font-bold uppercase mb-6 text-white leading-none tracking-tight drop-shadow-2xl">
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 md:px-12 lg:px-20 max-w-7xl mx-auto text-center">
+              <div className="max-w-5xl animate-fade-in-up flex flex-col items-center gap-6 md:gap-8">
+                <h1 className="font-oswald text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase mb-2 text-white leading-tight tracking-tight drop-shadow-2xl text-balance">
                   {slide.title || 'BORN TO CRUSH LAND'}
                 </h1>
-                <p className="text-base md:text-xl text-white/90 mb-10 max-w-2xl drop-shadow-md font-medium leading-relaxed">
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-white/90 max-w-2xl drop-shadow-md font-medium leading-relaxed text-balance">
                   {slide.subtitle || "From gully cricket to the world's biggest stage, the game remains the same—you have to beat the odds."}
                 </p>
 
-                <div className="flex flex-row items-center justify-center gap-3 md:gap-6">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 lg:gap-6 w-full sm:w-auto">
                   {slide.btn1_text && (
                     <button
-                      className="bg-white text-black w-36 sm:w-40 md:w-52 h-12 md:h-14 rounded-full font-bold uppercase tracking-widest hover:bg-gray-200 transition-all hover:scale-105 text-[10px] md:text-sm flex items-center justify-center whitespace-nowrap shadow-lg"
+                      className="bg-white text-black w-full sm:w-auto px-6 sm:px-7 md:px-8 py-3 md:py-3.5 lg:py-4 rounded-full font-bold uppercase tracking-widest hover:bg-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-105 text-xs sm:text-sm md:text-base flex items-center justify-center whitespace-nowrap shadow-lg"
                       onClick={() => navigate(slide.btn1_link || '/store')}
                     >
                       {slide.btn1_text}
@@ -407,11 +407,11 @@ export default function LandingPage() {
                   )}
                   {slide.btn2_text && (
                     <button
-                      className="border border-white/50 backdrop-blur-sm text-white w-36 sm:w-40 md:w-52 h-12 md:h-14 rounded-full font-bold uppercase tracking-widest hover:bg-white/10 transition-all hover:scale-105 text-[10px] md:text-sm flex items-center justify-center gap-2 whitespace-nowrap shadow-lg"
+                      className="border border-white/50 backdrop-blur-md text-white w-full sm:w-auto px-6 sm:px-7 md:px-8 py-3 md:py-3.5 lg:py-4 rounded-full font-bold uppercase tracking-widest hover:bg-white/10 hover:shadow-xl transition-all duration-300 hover:scale-105 text-xs sm:text-sm md:text-base flex items-center justify-center gap-2 whitespace-nowrap shadow-lg"
                       onClick={() => navigate(slide.btn2_link || '/store')}
                     >
                       <span>{slide.btn2_text}</span>
-                      <Play size={10} fill="currentColor" />
+                      <Play size={12} fill="currentColor" />
                     </button>
                   )}
                 </div>
@@ -474,8 +474,8 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Carousel */}
-      <section className="featured-section py-20 bg-black overflow-hidden" style={{ contain: 'content' }}>
-        <h2 className="featured-title text-3xl md:text-4xl font-bold text-white px-6 mb-10">Featured</h2>
+      <section className="featured-section py-12 sm:py-16 md:py-20 lg:py-24 bg-black overflow-hidden" style={{ contain: 'content' }}>
+        <h2 className="featured-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white px-4 sm:px-6 md:px-8 mb-8 sm:mb-10 md:mb-12">Featured</h2>
         <FeaturedCarousel
           images={[
             content?.feature_card1_img,
