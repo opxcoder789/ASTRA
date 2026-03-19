@@ -56,15 +56,14 @@
         }
 
         /* ==========================================
-           3. LOGO & MAIN LAYOUT (FIXED VISIBILITY)
+           3. LOGO & MAIN LAYOUT
         ========================================== */
-        /* ADDED POSITION RELATIVE AND Z-INDEX TO ENSURE THEY SIT ABOVE THE BACKGROUND */
         header { position: absolute; top: 40px; left: 40px; z-index: 100; } 
         .logo { width: 94px; height: 94px; border-radius: 50%; object-fit: cover; }
         
         main {
-            position: relative; /* CRITICAL FIX */
-            z-index: 10;        /* CRITICAL FIX */
+            position: relative; 
+            z-index: 10;        
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
             padding: 120px 24px 60px; width: 100%; max-width: 1200px; margin: 0 auto;
         }
@@ -117,7 +116,6 @@
         }
         .toast-notification.active { display: flex; }
         
-        /* 4-point star icon background */
         .toast-icon { background: rgba(255,255,255,0.05); width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
         
         .toast-content { flex: 1; text-align: left; }
@@ -130,7 +128,7 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==========================================
-           8. COUPON SECTION (SHOWN AFTER OKAY)
+           8. COUPON SECTION
         ========================================== */
         .coupon-section {
             display: none; background: rgba(20,20,20,0.6); border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 24px; width: 100%; animation: slideUp 0.4s ease forwards; backdrop-filter: blur(10px);
@@ -262,21 +260,27 @@
 
     <script>
         // ==========================================
-        // SUPABASE INITIALIZATION
+        // 1. UI INITIALIZATION (RUN IMMEDIATELY)
         // ==========================================
+        // This guarantees the UI becomes visible instantly, regardless of DB connection status.
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+        });
+
+        // ==========================================
+        // 2. SUPABASE INITIALIZATION
+        // ==========================================
+        // Renamed 'supabase' to 'supabaseClient' to fix the naming collision crash!
         const supabaseUrl = 'https://ewefbbswaaheqkqsfbzx.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3ZWZiYnN3YWFoZXFrcXNmYnp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3ODA2NzIsImV4cCI6MjA4MDM1NjY3Mn0.QfdRKCO1gW9wvUWMcT4ocYVYs_rm-LS-nQV2u1Qyaqc';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         document.addEventListener("DOMContentLoaded", () => {
             
-            // --- 1. Page Load Reveal Animations (FAIL-SAFE: ALWAYS RUN FIRST) ---
-            document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
-
-            // --- 2. Fetch Countdown Timer from Supabase ---
+            // --- 3. Fetch Countdown Timer from Supabase ---
             async function initCountdown() {
                 try {
-                    const { data, error } = await supabase.from('settings').select('launch_date').eq('id', 1).single();
+                    const { data, error } = await supabaseClient.from('settings').select('launch_date').eq('id', 1).single();
                     
                     let targetDate;
                     if (data && data.launch_date) {
@@ -310,7 +314,7 @@
             }
             initCountdown();
 
-            // --- 3. Fetch & Render Waitlist Table ---
+            // --- 4. Fetch & Render Waitlist Table ---
             function maskEmail(email) {
                 const parts = email.split('@');
                 if (parts.length !== 2) return email;
@@ -319,7 +323,7 @@
 
             async function loadWaitlist() {
                 try {
-                    const { data, error } = await supabase.from('waitlist').select('*').order('created_at', { ascending: false });
+                    const { data, error } = await supabaseClient.from('waitlist').select('*').order('created_at', { ascending: false });
                     const tbody = document.getElementById('waitlist-body');
                     
                     if (data && data.length > 0) {
@@ -344,7 +348,7 @@
             }
             loadWaitlist();
 
-            // --- 4. Form Submission & Interactions ---
+            // --- 5. Form Submission & Interactions ---
             const form = document.getElementById('waitlist-form');
             const submitBtn = document.getElementById('submit-btn');
             const buttonText = document.querySelector('.button-text');
@@ -367,27 +371,32 @@
                 spinner.style.display = 'block';
                 submitBtn.style.pointerEvents = 'none';
 
-                // Insert into Supabase
-                const { data, error } = await supabase.from('waitlist').insert([{ email: email }]);
+                try {
+                    // Insert into Supabase using renamed variable
+                    const { data, error } = await supabaseClient.from('waitlist').insert([{ email: email }]);
+
+                    if (error) {
+                        if(error.code === '23505') { 
+                            toastTitle.innerText = "Already Joined!";
+                            toastDesc.innerText = "This email is already on the waitlist.";
+                        } else {
+                            toastTitle.innerText = "Oops!";
+                            toastDesc.innerText = "Something went wrong. Try again.";
+                        }
+                    } else {
+                        toastTitle.innerText = "Congratulations!";
+                        toastDesc.innerText = "You'll be notified when we're live.";
+                        loadWaitlist(); 
+                    }
+                } catch(e) {
+                    toastTitle.innerText = "Network Error";
+                    toastDesc.innerText = "Unable to connect to the database.";
+                }
 
                 // Reset Loading State
                 buttonText.style.display = 'block';
                 spinner.style.display = 'none';
                 submitBtn.style.pointerEvents = 'auto';
-
-                if (error) {
-                    if(error.code === '23505') { 
-                        toastTitle.innerText = "Already Joined!";
-                        toastDesc.innerText = "This email is already on the waitlist.";
-                    } else {
-                        toastTitle.innerText = "Oops!";
-                        toastDesc.innerText = "Something went wrong. Try again.";
-                    }
-                } else {
-                    toastTitle.innerText = "Congratulations!";
-                    toastDesc.innerText = "You'll be notified when we're live.";
-                    loadWaitlist(); 
-                }
 
                 // Transition UI
                 form.classList.add('hidden');
@@ -402,7 +411,7 @@
                 }, 100);
             });
 
-            // --- 5. Canvas Particles Effect ---
+            // --- 6. Canvas Particles Effect ---
             const canvas = document.getElementById('particles-canvas');
             const ctx = canvas.getContext('2d');
             let particlesArray = [];
