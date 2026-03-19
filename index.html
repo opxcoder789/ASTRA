@@ -1,22 +1,457 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="ASTRA — Premium custom sneakers. Born to crush land." />
-    <title>ASTRA</title>
-    <!-- DNS prefetch for external domains to eliminate latency -->
-    <link rel="dns-prefetch" href="https://dqqwwdhjueyrrtqugxrv.supabase.co" />
-    <link rel="preconnect" href="https://dqqwwdhjueyrrtqugxrv.supabase.co" crossorigin />
-    <link rel="dns-prefetch" href="https://assets.mixkit.co" />
-    <link rel="dns-prefetch" href="https://images.unsplash.com" />
-    <link rel="dns-prefetch" href="https://instant.pxcode.io" />
-    <!-- Preload hero video for instant LCP -->
-    <link rel="preload" href="https://assets.mixkit.co/videos/preview/mixkit-futuristic-city-traffic-at-night-34565-large.mp4" as="video" type="video/mp4" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waitlister - Premium Waitlist</title>
+    
+    <!-- Exact Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <style>
+        /* ==========================================
+           1. CSS RESET & VARIABLES
+        ========================================== */
+        :root {
+            --bg-color: #0a0a0a;
+            --text-main: #f0f0f0;
+            --text-muted: rgba(255, 255, 255, 0.56);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --accent: rgb(240, 240, 240);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==========================================
+           2. ANIMATED BACKGROUND FX & PARTICLES
+        ========================================== */
+        .bg-fx-container {
+            position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; background-color: var(--bg-color);
+        }
+        #particles-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .bg-blur { position: absolute; top: 0; left: 0; right: 0; height: 60vh; backdrop-filter: blur(80px); background: linear-gradient(to bottom, #0a0a0a 0%, transparent 100%); z-index: 2; }
+        .bg-radial { position: absolute; bottom: 25vh; left: 50%; transform: translateX(-50%); width: 800px; height: 120px; background: radial-gradient(50% 50%, rgba(255, 255, 255, 0.5) 0%, transparent 100%); filter: blur(60px); z-index: 1; animation: pulseGlow 8s ease-in-out infinite alternate; }
+        .bg-ellipse-glow { position: absolute; bottom: -70vh; left: 50%; transform: translateX(-50%); width: 2000px; height: 100vh; background: linear-gradient(#fff 0%, transparent 100%); border-radius: 100%; z-index: 1; animation: pulseGlow 10s ease-in-out infinite alternate-reverse; }
+        .bg-ellipse-base { position: absolute; bottom: -70vh; left: 50%; transform: translateX(-50%); width: 2200px; height: 100vh; background-color: #0a0a0a; border-radius: 100%; box-shadow: inset 0 2px 20px #fff, 0 -10px 50px 1px rgba(255, 255, 255, 0.49); z-index: 2; }
+        
+        @keyframes pulseGlow {
+            0% { opacity: 0.6; transform: translateX(-50%) scale(0.95); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        /* ==========================================
+           3. LOGO & MAIN LAYOUT (FIXED VISIBILITY)
+        ========================================== */
+        /* ADDED POSITION RELATIVE AND Z-INDEX TO ENSURE THEY SIT ABOVE THE BACKGROUND */
+        header { position: absolute; top: 40px; left: 40px; z-index: 100; } 
+        .logo { width: 94px; height: 94px; border-radius: 50%; object-fit: cover; }
+        
+        main {
+            position: relative; /* CRITICAL FIX */
+            z-index: 10;        /* CRITICAL FIX */
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding: 120px 24px 60px; width: 100%; max-width: 1200px; margin: 0 auto;
+        }
+
+        .content-wrapper { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; max-width: 560px; width: 100%; }
+
+        /* ==========================================
+           4. COUNTDOWN TIMER
+        ========================================== */
+        .countdown-wrapper { display: flex; gap: 12px; justify-content: center; margin-bottom: 10px; }
+        .time-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 12px 16px; border-radius: 8px; min-width: 70px; display: flex; flex-direction: column; align-items: center; backdrop-filter: blur(10px); }
+        .time-box .num { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; color: #fff; }
+        .time-box .label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-top: 4px; }
+
+        /* ==========================================
+           5. TYPOGRAPHY
+        ========================================== */
+        h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 500; letter-spacing: -0.05em; line-height: 1.1; }
+        .serif-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; }
+        p.subtitle { color: var(--text-muted); font-size: 16px; letter-spacing: -0.04em; line-height: 1.5; max-width: 380px; }
+
+        /* ==========================================
+           6. FORM
+        ========================================== */
+        .form-area { width: 100%; max-width: 420px; margin-top: 8px; position: relative; }
+        
+        .email-form { position: relative; width: 100%; transition: 0.3s ease; }
+        .email-form.hidden { display: none; }
+        
+        .email-form input {
+            width: 100%; background: rgba(10, 10, 10, 0.8); border: none; border-radius: 8px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); color: #fff; padding: 16px 140px 16px 16px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .email-form input:focus { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
+        .email-form button {
+            position: absolute; top: 5px; right: 5px; bottom: 5px; background: var(--accent); color: #0a0a0a; border: none; border-radius: 4px; padding: 0 16px; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; width: 120px; display: flex; justify-content: center; align-items: center; transition: 0.2s;
+        }
+        .email-form button:hover { background: #fff; transform: translateY(-1px); }
+
+        .spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(10,10,10,0.2); border-top-color: #0a0a0a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ==========================================
+           7. TOAST NOTIFICATION (CONGRATS MESSAGE)
+        ========================================== */
+        .toast-notification {
+            display: none; background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px 20px;
+            align-items: center; gap: 16px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .toast-notification.active { display: flex; }
+        
+        /* 4-point star icon background */
+        .toast-icon { background: rgba(255,255,255,0.05); width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .toast-content { flex: 1; text-align: left; }
+        .toast-content h4 { color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .toast-content p { color: #aaa; font-size: 13px; margin: 0; }
+        
+        .toast-btn { background: #fff; color: #000; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .toast-btn:hover { background: #e0e0e0; transform: translateY(-1px); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================
+           8. COUPON SECTION (SHOWN AFTER OKAY)
+        ========================================== */
+        .coupon-section {
+            display: none; background: rgba(20,20,20,0.6); border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 24px; width: 100%; animation: slideUp 0.4s ease forwards; backdrop-filter: blur(10px);
+        }
+        .coupon-section.active { display: block; }
+        .coupon-section h3 { font-size: 18px; margin-bottom: 12px; font-weight: 500; color: #fff; }
+        .coupon-code { font-family: monospace; font-size: 24px; font-weight: 600; letter-spacing: 4px; color: #fff; background: #000; padding: 12px 24px; border-radius: 8px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 12px; }
+        .coupon-section p { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+
+        /* ==========================================
+           9. WAITLIST TABLE SECTION
+        ========================================== */
+        .waitlist-container { width: 100%; max-width: 600px; margin-top: 80px; text-align: left; }
+        .waitlist-container h3 { font-size: 20px; margin-bottom: 16px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; }
+        
+        .table-wrapper { background: rgba(10,10,10,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; backdrop-filter: blur(10px); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; background: rgba(0,0,0,0.5); }
+        td { color: #ddd; font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        .timestamp { color: #666; font-size: 12px; }
+
+        /* Reveal utility */
+        .reveal { opacity: 0; transform: translateY(20px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 809px) {
+            header { top: 20px; left: 20px; }
+            .countdown-wrapper { gap: 8px; }
+            .time-box { min-width: 60px; padding: 10px; }
+            .time-box .num { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Animated Background & Canvas Particles -->
+    <div class="bg-fx-container">
+        <canvas id="particles-canvas"></canvas>
+        <div class="bg-blur"></div>
+        <div class="bg-radial"></div>
+        <div class="bg-ellipse-glow"></div>
+        <div class="bg-ellipse-base"></div>
+        <div class="bg-fade-left"></div>
+        <div class="bg-fade-right"></div>
+    </div>
+
+    <!-- 2. Header / Logo (Top Left) -->
+    <header>
+        <img src="https://framerusercontent.com/images/GcFu6wYPhW1waroIjPNGnmOlYk.png?width=500&height=500" alt="Astra Logo" class="logo reveal">
+    </header>
+
+    <main>
+        <div class="content-wrapper">
+            
+            <!-- 3. Countdown Timer -->
+            <div class="countdown-wrapper reveal" style="transition-delay: 0.1s;">
+                <div class="time-box"><span class="num" id="cd-days">30</span><span class="label">Days</span></div>
+                <div class="time-box"><span class="num" id="cd-hours">00</span><span class="label">Hrs</span></div>
+                <div class="time-box"><span class="num" id="cd-mins">00</span><span class="label">Mins</span></div>
+                <div class="time-box"><span class="num" id="cd-secs">00</span><span class="label">Secs</span></div>
+            </div>
+
+            <h1 class="reveal" style="transition-delay: 0.2s;">
+                Good things come<br>to those Who Wait<span class="serif-italic">.</span>
+            </h1>
+            
+            <p class="subtitle reveal" style="transition-delay: 0.3s;">
+                Generate leads, build excitement, and grow your email list ahead of launch day.
+            </p>
+
+            <!-- 4. Form & Interactions Area -->
+            <div class="form-area reveal" style="transition-delay: 0.4s;">
+                
+                <!-- Email Form -->
+                <form class="email-form" id="waitlist-form">
+                    <input type="email" id="email-input" placeholder="Your Email Address" required autocomplete="off">
+                    <button type="submit" id="submit-btn">
+                        <span class="button-text">Get Notified</span>
+                        <div class="spinner"></div>
+                    </button>
+                </form>
+
+                <!-- EXACT MATCH Toast Notification -->
+                <div class="toast-notification" id="toast-notification">
+                    <div class="toast-icon">
+                        <!-- 4 point star SVG -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ffffff" width="20" height="20">
+                            <path d="M12 0L13.5 8.5L22 10L13.5 11.5L12 20L10.5 11.5L2 10L10.5 8.5L12 0Z" />
+                        </svg>
+                    </div>
+                    <div class="toast-content">
+                        <h4 id="toast-title">Congratulations!</h4>
+                        <p id="toast-desc">You'll be notified when we're live.</p>
+                    </div>
+                    <button class="toast-btn" id="okay-btn" type="button">Okay</button>
+                </div>
+
+                <!-- Post-Okay Coupon Section -->
+                <div class="coupon-section" id="coupon-section">
+                    <h3>Reward Unlocked</h3>
+                    <div class="coupon-code">ASTRA108</div>
+                    <p>Use this exclusive code to get special offers on shoes when the Astra store goes live.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 5. Waitlist Table Section -->
+        <div class="waitlist-container reveal" style="transition-delay: 0.6s;">
+            <h3>Early Access Members</h3>
+            <div class="table-wrapper">
+                <table id="waitlist-table">
+                    <thead>
+                        <tr>
+                            <th>User Email</th>
+                            <th>Joined On</th>
+                        </tr>
+                    </thead>
+                    <tbody id="waitlist-body">
+                        <!-- Populated by JS -->
+                        <tr><td colspan="2" style="text-align:center; color:#666;">Loading waitlist...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // SUPABASE INITIALIZATION
+        // ==========================================
+        const supabaseUrl = 'https://ewefbbswaaheqkqsfbzx.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3ZWZiYnN3YWFoZXFrcXNmYnp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3ODA2NzIsImV4cCI6MjA4MDM1NjY3Mn0.QfdRKCO1gW9wvUWMcT4ocYVYs_rm-LS-nQV2u1Qyaqc';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // --- 1. Page Load Reveal Animations (FAIL-SAFE: ALWAYS RUN FIRST) ---
+            document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+
+            // --- 2. Fetch Countdown Timer from Supabase ---
+            async function initCountdown() {
+                try {
+                    const { data, error } = await supabase.from('settings').select('launch_date').eq('id', 1).single();
+                    
+                    let targetDate;
+                    if (data && data.launch_date) {
+                        targetDate = new Date(data.launch_date).getTime();
+                    } else {
+                        // Fallback: 30 days from right now if DB empty/fails
+                        targetDate = new Date().getTime() + (30 * 24 * 60 * 60 * 1000); 
+                    }
+                    
+                    setInterval(() => {
+                        const now = new Date().getTime();
+                        const diff = targetDate - now;
+
+                        if (diff > 0) {
+                            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                            document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+                            document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+                            document.getElementById('cd-mins').innerText = String(mins).padStart(2, '0');
+                            document.getElementById('cd-secs').innerText = String(secs).padStart(2, '0');
+                        } else {
+                            document.querySelector('.countdown-wrapper').style.display = 'none';
+                        }
+                    }, 1000);
+                } catch(err) {
+                    console.error("Countdown setup failed:", err);
+                }
+            }
+            initCountdown();
+
+            // --- 3. Fetch & Render Waitlist Table ---
+            function maskEmail(email) {
+                const parts = email.split('@');
+                if (parts.length !== 2) return email;
+                return `${parts[0].substring(0, 2)}***@${parts[1]}`;
+            }
+
+            async function loadWaitlist() {
+                try {
+                    const { data, error } = await supabase.from('waitlist').select('*').order('created_at', { ascending: false });
+                    const tbody = document.getElementById('waitlist-body');
+                    
+                    if (data && data.length > 0) {
+                        tbody.innerHTML = '';
+                        data.forEach(user => {
+                            const dateObj = new Date(user.created_at);
+                            const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                            
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${maskEmail(user.email)}</td>
+                                <td class="timestamp">${formattedDate}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#666;">No members yet. Be the first!</td></tr>';
+                    }
+                } catch(err) {
+                    document.getElementById('waitlist-body').innerHTML = '<tr><td colspan="2" style="text-align:center; color:#666;">Unable to load waitlist.</td></tr>';
+                }
+            }
+            loadWaitlist();
+
+            // --- 4. Form Submission & Interactions ---
+            const form = document.getElementById('waitlist-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const buttonText = document.querySelector('.button-text');
+            const spinner = document.querySelector('.spinner');
+            const emailInput = document.getElementById('email-input');
+            
+            const toast = document.getElementById('toast-notification');
+            const toastTitle = document.getElementById('toast-title');
+            const toastDesc = document.getElementById('toast-desc');
+            const okayBtn = document.getElementById('okay-btn');
+            const couponSection = document.getElementById('coupon-section');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+                if(!email) return;
+
+                // Loading State
+                buttonText.style.display = 'none';
+                spinner.style.display = 'block';
+                submitBtn.style.pointerEvents = 'none';
+
+                // Insert into Supabase
+                const { data, error } = await supabase.from('waitlist').insert([{ email: email }]);
+
+                // Reset Loading State
+                buttonText.style.display = 'block';
+                spinner.style.display = 'none';
+                submitBtn.style.pointerEvents = 'auto';
+
+                if (error) {
+                    if(error.code === '23505') { 
+                        toastTitle.innerText = "Already Joined!";
+                        toastDesc.innerText = "This email is already on the waitlist.";
+                    } else {
+                        toastTitle.innerText = "Oops!";
+                        toastDesc.innerText = "Something went wrong. Try again.";
+                    }
+                } else {
+                    toastTitle.innerText = "Congratulations!";
+                    toastDesc.innerText = "You'll be notified when we're live.";
+                    loadWaitlist(); 
+                }
+
+                // Transition UI
+                form.classList.add('hidden');
+                toast.classList.add('active');
+            });
+
+            // Click "Okay" on Toast
+            okayBtn.addEventListener('click', () => {
+                toast.classList.remove('active');
+                setTimeout(() => {
+                    couponSection.classList.add('active');
+                }, 100);
+            });
+
+            // --- 5. Canvas Particles Effect ---
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            let particlesArray = [];
+            
+            function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedY = (Math.random() * 0.4 + 0.1) * -1;
+                    this.speedX = (Math.random() - 0.5) * 0.3;
+                    this.opacity = Math.random() * 0.5 + 0.1;
+                }
+                update() {
+                    this.y += this.speedY;
+                    this.x += this.speedX;
+                    if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.x < 0) this.x = canvas.width;
+                }
+                draw() {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particlesArray = [];
+                let numParticles = window.innerWidth < 800 ? 50 : 120;
+                for (let i = 0; i < numParticles; i++) particlesArray.push(new Particle());
+            }
+            initParticles();
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                    particlesArray[i].draw();
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+        });
+    </script>
+</body>
+</html>
